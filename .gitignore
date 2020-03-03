@@ -1,0 +1,4 @@
+*.o
+compiler
+result.out
+tmp.out

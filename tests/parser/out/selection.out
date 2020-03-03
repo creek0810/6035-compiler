@@ -1,0 +1,52 @@
+ block node:
+    if node:
+        condition: 
+            binary node:
+                operator: logic_and
+                lhs: 
+                    binary node:
+                        operator: eq
+                        lhs: 
+                            1
+                        rhs: 
+                            1
+                rhs: 
+                    binary node:
+                        operator: eq
+                        lhs: 
+                            2
+                        rhs: 
+                            3
+        true: 
+            block node:
+                binary node:
+                    operator: add
+                    lhs: 
+                        1
+                    rhs: 
+                        2
+        false: 
+            block node:
+                if node:
+                    condition: 
+                        binary node:
+                            operator: eq
+                            lhs: 
+                                1
+                            rhs: 
+                                1
+                    true: 
+                        block node:
+                            binary node:
+                                operator: add
+                                lhs: 
+                                    2
+                                rhs: 
+                                    3
+                            binary node:
+                                operator: add
+                                lhs: 
+                                    3
+                                rhs: 
+                                    5
+                    false: 
