@@ -4,8 +4,11 @@
 #include "node.h"
 #include "parser.h"
 #include "tokenizer.h"
+#include "interpreter.h"
 
+extern Node *tree;
 extern void print_token(char*);
 extern void print_tree(char*);
+
 
 #endif

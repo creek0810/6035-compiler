@@ -4,7 +4,7 @@
 extern int yylex();
 extern FILE *yyin;
 extern int yylineno;
-Node *debug;
+Node *tree;
 void yyerror(const char* msg) {
     printf("error: %s %d\n",msg, yylineno);
 }
@@ -18,13 +18,14 @@ void yyerror(const char* msg) {
 }
 
 // keyword token
-%token IF ELSE FOR CONTINUE BREAK INT CHAR
+%token IF ELSE FOR CONTINUE BREAK
+// built in function
+%token PRINT APPEND LEN
 // punc token
-%token SHL SHR ADD_EQ SUB_EQ DIV_EQ MOD_EQ MUL_EQ SHL_EQ SHR_EQ AND_EQ XOR_EQ OR_EQ LE GE EQ NE LOGIC_AND LOGIC_OR SPREAD PAST SEMI L_CURLY R_CURLY L_PARA R_PARA L_BRACKET R_BRACKET OR AND XOR ADD SUB MUL DIV MOD LT GT TILDE EXCLAM COMMA ASSIGN
+%token SHL SHR LE GE EQ NE LOGIC_AND LOGIC_OR SPREAD PAST SEMI L_CURLY R_CURLY L_PARA R_PARA L_BRACKET R_BRACKET OR AND XOR ADD SUB MUL DIV MOD LT GT TILDE EXCLAM COMMA ASSIGN
 // const token
-%token NUMBER
+%token <num> NUMBER
 %token <str> STR
-%token <str> CHARACTER
 // ident
 %token <str> IDENT
 
@@ -50,7 +51,11 @@ void yyerror(const char* msg) {
 %type <node> multiplicative_expression
 %type <node> additive_expression
 %type <node> unary_expression
+%type <node> postfix_expression
 %type <node> primary_expression
+%type <node> array
+
+
 
 
 // config
@@ -58,8 +63,8 @@ void yyerror(const char* msg) {
 
 
 %%
-program: { $$ = NULL; debug = $$;}
-       | statement_list { $$ = $1; debug = $1;}
+program: { $$ = NULL; tree = $$;}
+       | statement_list { $$ = $1; tree = $1;}
        ;
 
 
@@ -77,6 +82,9 @@ statement: expression_statement { $$ = $1; }
          | iteration_statement { $$ = $1; }
          | jump_statement { $$ = $1; }
          ;
+
+
+
 
 expression_statement: SEMI { $$ = NULL; }
                     | expression SEMI { $$ = $1; }
@@ -113,19 +121,8 @@ opt_expression: { $$ = NULL; }
 
 
 /* expression */
-/* TODO: support advanced assign operator */
 expression: logical_or_expression { $$ = $1; }
           | IDENT ASSIGN expression { $$ = new_assign_node($1, $3); }
-          | IDENT MUL_EQ expression { }
-          | IDENT DIV_EQ expression {}
-          | IDENT MOD_EQ expression {}
-          | IDENT ADD_EQ expression {}
-          | IDENT SUB_EQ expression {}
-          | IDENT SHL_EQ expression {}
-          | IDENT SHR_EQ expression {}
-          | IDENT AND_EQ expression {}
-          | IDENT XOR_EQ expression {}
-          | IDENT OR_EQ expression {}
           ;
 
 logical_or_expression: logical_and_expression { $$ = $1; }
@@ -212,7 +209,7 @@ multiplicative_expression: unary_expression { $$ = $1; }
                          }
                          ;
 
-unary_expression: primary_expression { $$ = $1; }
+unary_expression: postfix_expression { $$ = $1; }
                 | ADD unary_expression {
                     $$ = new_unary_node($2, add);
                 }
@@ -227,11 +224,33 @@ unary_expression: primary_expression { $$ = $1; }
                 }
                 ;
 
-primary_expression: IDENT { $$ = new_ident_node(yylval.str); }
-                  | NUMBER { $$ = new_number_node(yylval.num); }
-                  | CHARACTER { $$ = new_char_node(yylval.ch); }
-                  | L_PARA expression R_PARA { $$ = $2; }
+/* TODO: support append function */
+postfix_expression: primary_expression { $$ = $1; }
+                  | postfix_expression L_BRACKET expression R_BRACKET {
+                      $$ = NULL;
+                  }
+                  | PRINT L_PARA expression R_PARA {
+                      $$ = new_print_node($3);
+                  }
+                  | LEN L_PARA expression R_PARA {
+                      $$ = new_len_node($3);
+                  }
                   ;
+
+primary_expression: IDENT { $$ = new_ident_node($1); }
+                  | NUMBER { $$ = new_number_node($1); }
+                  | L_PARA expression R_PARA { $$ = $2; }
+                  | STR { $$ = new_str_node($1); }
+                  | L_BRACKET array R_BRACKET { $$ = $2; }
+                  ;
+
+array: { $$ = new_array_node(); }
+     | STR  { $$ = new_array_node(); push_array_node($$, new_str_node($1)); }
+     | NUMBER { $$ = new_array_node(); push_array_node($$, new_number_node($1)); }
+     | array COMMA STR { push_array_node($$, new_str_node($3)); }
+     | array COMMA NUMBER { push_array_node($$, new_number_node($3)); }
+     ;
+
 %%
 
 void print_node(Node *cur_node, int depth);
@@ -382,6 +401,19 @@ void print_block_node(Node *cur_node, int depth) {
     }
 }
 
+void print_array_node(Node *cur_node, int depth) {
+    printf("%*sarray node:\n", depth * 4, " ");
+
+    NodeList *cur_ptr = cur_node->node.array_node->head;
+
+    while(cur_ptr) {
+        if(cur_ptr->node) {
+            print_node(cur_ptr->node, depth + 1);
+        }
+        cur_ptr = cur_ptr->next;
+    }
+}
+
 void print_assign_node(Node *cur_node, int depth) {
     printf("%*sassign node:\n", depth * 4, " ");
     // print name
@@ -395,45 +427,39 @@ void print_node(Node *cur_node, int depth) {
     if(cur_node == NULL) return;
 
     switch(cur_node->type) {
-        // binary node
-        case 0:
+        case binaryNode:
             print_binary_node(cur_node, depth);
             break;
-        // unary node
-        case 1:
+        case unaryNode:
             print_unary_node(cur_node, depth);
             break;
-        // str node
-        case 2:
+        case strNode:
             printf("%*s%s\n", depth * 4 , " ", cur_node->node.str_node);
             break;
-        // char node
-        case 3:
-            printf("%*s%c\n", depth * 4 , " ", cur_node->node.char_node);
-            break;
-        // number node
-        case 4:
+        case numberNode:
             printf("%*s%d\n", depth * 4 , " ", cur_node->node.number_node);
             break;
-        // ident node
-        case 5:
+        case identNode:
             printf("%*sident: %s\n", depth * 4 , " ", cur_node->node.ident_node);
             break;
-        // if node
-        case 6:
+        case ifNode:
             print_if_node(cur_node, depth);
             break;
-        // for node
-        case 7:
+        case forNode:
             print_for_node(cur_node, depth);
             break;
-        // block node
-        case 8:
+        case blockNode:
             print_block_node(cur_node, depth);
             break;
-        // assign node
-        case 9:
+        case assignNode:
             print_assign_node(cur_node, depth);
+            break;
+        case printNode:
+            printf("%*sprint:", depth * 4 , " ");
+            print_node(cur_node->node.print_node, depth + 1);
+            break;
+        case arrayNode:
+            print_array_node(cur_node, depth);
             break;
         default:
             printf("unexpected node type: %d\n", cur_node->type);
@@ -443,9 +469,8 @@ void print_node(Node *cur_node, int depth) {
 void print_tree(char *file_name) {
     yyin = fopen(file_name, "r");
     yyparse();
-    if(debug) {
-        print_node(debug, 0);
+    if(tree) {
+        print_node(tree, 0);
     }
     fclose(yyin);
 }
-

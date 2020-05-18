@@ -3,6 +3,7 @@
     #include "node.h"
     #include "parser.h"
 
+    char *clean_str(char *ori);
 %}
 
     /* ident */
@@ -16,7 +17,6 @@ ESC "\\v"|"\\n"|"\\'"|"\\\\"|"\\\""|"\\?"|"\\a"|"\\b"|"\\f"|"\\r"|"\\t"
 
     /* str */
 CHARACTER ([^\n"\\]|{ESC})
-CHAR \'{CHARACTER}\'
 STR \"{CHARACTER}*\"
 
     /* config */
@@ -30,13 +30,14 @@ STR \"{CHARACTER}*\"
 "continue"                  { return CONTINUE; }
 "break"                     { return BREAK; }
 "for"                       { return FOR; }
-"int"                       { return INT; }
-"char"                      { return CHAR; }
+    /* built in function */
+"print"                     { return PRINT; }
+"len"                       { return LEN; }
+"append"                    { return APPEND; }
 
     /* const */
 {DEC_CONST}                 { yylval.num = atoi(yytext); return NUMBER; }
-{STR}                       { yylval.str = strdup(yytext); return STR; }
-{CHAR}                      { yylval.str = strdup(yytext); return CHARACTER; }
+{STR}                       { yylval.str = clean_str(yytext); return STR; }
 
     /* ident */
 {ID}                        { yylval.str = strdup(yytext); return IDENT; }
@@ -44,16 +45,6 @@ STR \"{CHARACTER}*\"
     /* multiple letters punc */
 "<<"                        { return SHL; }
 ">>"                        { return SHR; }
-"+="                        { return ADD_EQ; }
-"-="                        { return SUB_EQ; }
-"/="                        { return DIV_EQ; }
-"%="                        { return MOD_EQ; }
-"*="                        { return MUL_EQ; }
-"<<="                       { return SHL_EQ; }
-">>="                       { return SHR_EQ; }
-"&="                        { return AND_EQ; }
-"^="                        { return XOR_EQ; }
-"|="                        { return OR_EQ; }
 "<="                        { return LE; }
 ">="                        { return GE; }
 "=="                        { return EQ; }
@@ -93,6 +84,13 @@ int yywrap() {
     return 1;
 }
 
+char *clean_str(char *ori) {
+    int len = strlen(ori) - 2 + 1; // sub " "(2 char) add \0(1 char)
+    char *result = calloc(1, sizeof(char) * len);
+    strncpy(result, ori + 1, len - 1);
+    return result;
+}
+
 void print_token(char *file_name) {
     yyin = fopen(file_name, "r");
     int token;
@@ -101,14 +99,12 @@ void print_token(char *file_name) {
             printf("ident: %s\n", yytext);
         } else if(token == NUMBER) {
             printf("number: %s\n", yytext);
-        } else if(token >= IF && token <= CHAR) {
+        } else if(token >= IF && token <= APPEND) {
             printf("keyword: %s\n", yytext);
         } else if(token >= SHL && token <= ASSIGN) {
             printf("punc: %s\n", yytext);
         } else if(token == STR) {
             printf("str: %s\n", yytext);
-        } else if(token == CHARACTER) {
-            printf("char: %s\n", yytext);
         } else if(token != -1) {
             printf("punc: %s\n", yytext);
         } else {

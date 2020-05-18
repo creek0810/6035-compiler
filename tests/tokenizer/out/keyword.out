@@ -4,3 +4,4 @@ keyword: for
 keyword: continue
 keyword: break
 ident: return
+keyword: print

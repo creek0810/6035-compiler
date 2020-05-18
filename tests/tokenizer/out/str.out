@@ -17,6 +17,3 @@ str: "hello"
 str: "hello"
 str: "\n"
 str: "hello\n"
-char: '\n'
-char: '\''
-char: 'n'

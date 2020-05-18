@@ -1,9 +1,11 @@
-OBJS = compiler.o parser.o tokenizer.o symbolTable.o node.o
+OBJS = cli.o parser.o tokenizer.o symbolTable.o node.o interpreter.o object.o
 
-compiler: $(OBJS) compiler.h
-	cc -o compiler $(OBJS)
+cli: $(OBJS) cli.h
+	cc -o cli $(OBJS)
 
-compiler.o: parser.h tokenizer.h
+object.o: object.h
+
+cli.o: parser.h tokenizer.h
 
 tokenizer.o: parser.h
 

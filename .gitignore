@@ -1,4 +1,4 @@
 *.o
-compiler
+cli
 result.out
 tmp.out

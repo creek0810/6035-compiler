@@ -22,8 +22,14 @@ Node *new_node(void *cur_node, ASTType type) {
         case blockNode:
             result->node.block_node = cur_node;
             break;
-        case charNode:
-            result->node.char_node = *(char*)cur_node;
+        case printNode:
+            result->node.print_node = cur_node;
+            break;
+        case lenNode:
+            result->node.print_node = cur_node;
+            break;
+        case strNode:
+            result->node.str_node = strdup((char*)cur_node);
             break;
         case identNode:
             result->node.ident_node = strdup((char*)cur_node);
@@ -31,6 +37,11 @@ Node *new_node(void *cur_node, ASTType type) {
         case numberNode:
             result->node.number_node = *(int*)cur_node;
             break;
+        case arrayNode:
+            result->node.array_node = cur_node;
+            break;
+        default:
+            printf("undefined node type: %d\n", type);
     }
     return result;
 }
@@ -89,8 +100,16 @@ Node *new_for_node(Node *init, Node *stop, Node *after, Node *action) {
     return new_node(cur_node, forNode);
 }
 
-Node *new_char_node(char ch) {
-    return new_node(&ch, charNode);
+Node *new_print_node(Node *child) {
+    return new_node(child, printNode);
+}
+
+Node *new_len_node(Node *child) {
+    return new_node(child, lenNode);
+}
+
+Node *new_str_node(char *str) {
+    return new_node(str, strNode);
 }
 
 Node *new_ident_node(char *name) {
@@ -109,6 +128,15 @@ Node *new_block_node() {
     return new_node(cur_node, blockNode);
 }
 
+Node *new_array_node() {
+    ArrayNode *cur_node = calloc(1, sizeof(ArrayNode));
+    if(cur_node == NULL) {
+        return NULL;
+    }
+    return new_node(cur_node, arrayNode);
+}
+
+
 // block node function
 void push_node(Node *cur_block_node, Node *cur_node) {
     // construct new node list node
@@ -120,5 +148,19 @@ void push_node(Node *cur_block_node, Node *cur_node) {
     } else {
         cur_block_node->node.block_node->cur_node->next = new_node_list_node;
         cur_block_node->node.block_node->cur_node = new_node_list_node;
+    }
+}
+
+// array node function
+void push_array_node(Node *cur_array_node, Node *cur_node) {
+    // construct new node list node
+    NodeList *new_node_list_node = calloc(1, sizeof(NodeList));
+    new_node_list_node->node = cur_node;
+    if(cur_array_node->node.array_node->head == NULL) {
+        cur_array_node->node.array_node->head = new_node_list_node;
+        cur_array_node->node.array_node->cur_node= new_node_list_node;
+    } else {
+        cur_array_node->node.array_node->cur_node->next = new_node_list_node;
+        cur_array_node->node.array_node->cur_node = new_node_list_node;
     }
 }

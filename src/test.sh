@@ -9,7 +9,7 @@ test() {
     do
         in_path="$folder_path/in/$file_name"
         out_path="$folder_path/out/${file_name%.in}.out"
-        `./compiler -t $in_path > tmp.out`
+        `./cli -t $in_path > tmp.out`
         # write result
         `echo -e "\n$in_path" >> result.out`
         `diff tmp.out $out_path >> result.out`

@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdbool.h>
-#include "compiler.h"
+#include "cli.h"
 
 
 bool str_eq(char *a, char *b) {
@@ -14,9 +14,9 @@ int main(int argc, char **argv) {
         if(str_eq(argv[1], "-t")) print_token(argv[2]);
         // parser debug
         else if(str_eq(argv[1], "-p")) print_tree(argv[2]);
-    } else {
     // interpeter mode
-    // TODO: finish interpreter part
+    } else {
+        run(argv[1]);
     }
     return 0;
 }
