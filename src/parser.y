@@ -20,7 +20,7 @@ void yyerror(const char* msg) {
 // keyword token
 %token IF ELSE FOR CONTINUE BREAK
 // built in function
-%token PRINT APPEND LEN
+%token PRINT APPEND LEN INPUT INT
 // punc token
 %token SHL SHR LE GE EQ NE LOGIC_AND LOGIC_OR SPREAD PAST SEMI L_CURLY R_CURLY L_PARA R_PARA L_BRACKET R_BRACKET OR AND XOR ADD SUB MUL DIV MOD LT GT TILDE EXCLAM COMMA ASSIGN
 // const token
@@ -122,6 +122,7 @@ opt_expression: { $$ = NULL; }
 
 /* expression */
 expression: logical_or_expression { $$ = $1; }
+          | IDENT ASSIGN expression { $$ = new_assign_node($1, $3); }
           | IDENT ASSIGN expression { $$ = new_assign_node($1, $3); }
           ;
 
@@ -227,13 +228,19 @@ unary_expression: postfix_expression { $$ = $1; }
 /* TODO: support append function */
 postfix_expression: primary_expression { $$ = $1; }
                   | postfix_expression L_BRACKET expression R_BRACKET {
-                      $$ = NULL;
+                      $$ = new_binary_node($1, $3, getArray);
                   }
                   | PRINT L_PARA expression R_PARA {
                       $$ = new_print_node($3);
                   }
                   | LEN L_PARA expression R_PARA {
                       $$ = new_len_node($3);
+                  }
+                  | INPUT L_PARA R_PARA {
+                      $$ = new_unary_node(NULL, input_);
+                  }
+                  | INT L_PARA expression R_PARA {
+                      $$ = new_unary_node($3, toInt);
                   }
                   ;
 
@@ -323,7 +330,12 @@ void print_operator(int op) {
         case 21:
             printf("continue\n");
             break;
-
+        case getArray:
+            printf("getArray\n");
+            break;
+        case input_:
+            printf("input\n");
+            break;
         default:
             printf("undefined %d\n", op);
     }
@@ -455,7 +467,7 @@ void print_node(Node *cur_node, int depth) {
             print_assign_node(cur_node, depth);
             break;
         case printNode:
-            printf("%*sprint:", depth * 4 , " ");
+            printf("%*sprint:\n", depth * 4 , " ");
             print_node(cur_node->node.print_node, depth + 1);
             break;
         case arrayNode:

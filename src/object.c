@@ -116,6 +116,20 @@ void push_array_str(Object *a, char *str) {
     push_obj(a, new_str(str));
 }
 
+Object *array_get(Object *a, int idx) {
+    switch(a->type) {
+        case array:
+            return a->value.array.array[idx];
+        case string: {
+            char ch[2] = {0};
+            ch[0] = a->value.str.value[idx];
+            return new_str(ch);
+        }
+        default:
+            printf("type error: type %d can't use idx\n", a->type);
+    }
+}
+
 /* operation function */
 Object *obj_add(Object *a, Object *b) {
     if(!is_same_type(a, b)) {
@@ -371,6 +385,22 @@ bool is_true(Object *obj) {
     return true;
 }
 
+Object *to_int(Object *obj) {
+    switch(obj->type) {
+        case number:
+            return obj;
+        case array:
+            printf("array can't be convert to int");
+            return NULL;
+        case string: {
+            int result = 0;
+            for(int i=0; i<obj->value.str.length; i++) {
+                result = result * 10 + (obj->value.str.value[i] - '0');
+            }
+            return new_number(result);
+        }
+    }
+}
 /* debug function */
 void print_object(Object *obj) {
     switch (obj->type) {

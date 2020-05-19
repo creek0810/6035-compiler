@@ -34,6 +34,8 @@ STR \"{CHARACTER}*\"
 "print"                     { return PRINT; }
 "len"                       { return LEN; }
 "append"                    { return APPEND; }
+"input"                     { return INPUT; }
+"int"                       { return INT; }
 
     /* const */
 {DEC_CONST}                 { yylval.num = atoi(yytext); return NUMBER; }

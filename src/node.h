@@ -47,7 +47,9 @@ enum Operator {
     mul = 19,
     break_ = 20,
     continue_ = 21,
-    assign = 22,
+    getArray = 22,
+    input_ = 23,
+    toInt = 24,
 };
 
 

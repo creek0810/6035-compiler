@@ -9,6 +9,7 @@ Object *run_ident_node(Node *cur_node);
 Object *run_assign_node(Node *cur_node);
 Object *run_for_node(Node *cur_node);
 Object *run_array_node(Node *cur_node);
+Object *run_unary_node(Node *cur_node);
 // built_in function
 Object *run_print_node(Node *cur_node);
 Object *run_len_node(Node *cur_node);
@@ -21,6 +22,7 @@ void run(char *file_name) {
 }
 
 Object *run_node(Node *cur_node) {
+
     if(cur_node == NULL) return 0;
 
     ASTType cur_type = cur_node->type;
@@ -28,7 +30,7 @@ Object *run_node(Node *cur_node) {
         case binaryNode:
             return run_binary_node(cur_node);
         case unaryNode:
-            break;
+            return run_unary_node(cur_node);
         case strNode:
             return new_str(cur_node->node.str_node);
         case numberNode:
@@ -111,6 +113,9 @@ Object *run_binary_node(Node *cur_node) {
             return obj_le(left_value, right_value);
         case ge:
             return obj_le(right_value, left_value);
+        case getArray:
+            //TODO: warning for idx should be number
+            return array_get(left_value, right_value->value.number);
         default:
             printf("unexpected binary node: %d\n", op);
             return NULL;
@@ -245,6 +250,26 @@ Object *run_len_node(Node *cur_node) {
         exit(1);
     }
     return obj_len(value);
+}
+
+Object *run_unary_node(Node *cur_node) {
+    Operator op = cur_node->node.unary_node->op;
+    switch(op) {
+        case input_: {
+            char buffer[1024] = {0};
+            fgets(buffer, 1024, stdin);
+            int len = strlen(buffer);
+            // ignore \n
+            buffer[len - 1] = 0;
+            return new_str(buffer);
+        }
+        case toInt: {
+            Object *tmp = run_node(cur_node->node.unary_node->child);
+            return to_int(tmp);
+        }
+
+    }
+    return NULL;
 }
 /* TODO: finish unary node */
 /*

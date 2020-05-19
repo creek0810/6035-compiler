@@ -57,6 +57,7 @@ Object *update_str(Object *obj, char *str);
 // array function
 void push_array_number(Object *a, int num);
 void push_array_str(Object *a, char *str);
+Object *array_get(Object *a, int idx);
 
 
 // operation function
@@ -80,6 +81,7 @@ Object *obj_len(Object *a);
 
 /* another function */
 bool is_true(Object *obj);
+Object *to_int(Object *obj);
 
 /* debug function */
 void print_object(Object *obj);
