@@ -1,0 +1,10 @@
+n = int(input());
+
+ans = "";
+if(n > 0) {
+    ans = ans + "Q";
+}
+for(i=0; i<n; i=i+1) {
+    ans = ans + "AQ";
+}
+print(ans);

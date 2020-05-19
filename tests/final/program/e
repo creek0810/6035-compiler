@@ -1,0 +1,14 @@
+in = input();
+
+cnt = 0;
+result = "";
+for(i=0; i<len(in); i=i+1) {
+    if(in[i] == ",") {
+        cnt = cnt + 1;
+    } else {
+        if(cnt == 3) {
+            result = result + in[i];
+        }
+    }
+}
+print(result);

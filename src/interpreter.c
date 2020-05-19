@@ -258,9 +258,8 @@ Object *run_unary_node(Node *cur_node) {
         case input_: {
             char buffer[1024] = {0};
             fgets(buffer, 1024, stdin);
-            int len = strlen(buffer);
-            // ignore \n
-            buffer[len - 1] = 0;
+            // handle new line
+            buffer[strcspn(buffer, "\r\n")] = 0;
             return new_str(buffer);
         }
         case toInt: {

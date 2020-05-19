@@ -1,0 +1,21 @@
+a = int(input());
+
+
+
+if(a < 2000) {
+    print("年份過小");
+} else {
+    if(a >= 3000) {
+        print("年份過大");
+    } else {
+        if(a % 400 == 0) {
+            print("yes");
+        } else {
+            if(a % 4 == 0 && a % 100 != 0) {
+                print("yes");
+            } else {
+                print("no");
+            }
+        }
+    }
+}
