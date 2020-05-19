@@ -21,6 +21,7 @@ STR \"{CHARACTER}*\"
 
     /* config */
 %option yylineno
+%x COMMENT
 
 %%
 
@@ -78,8 +79,15 @@ STR \"{CHARACTER}*\"
 "="                         { return ASSIGN; }
 
     /* another */
-[\n\t ]                      {}
-. { return -1; }
+"//".*                      {}
+
+"/*"                        { BEGIN(COMMENT); }
+<COMMENT>"*/"               { BEGIN(INITIAL); }
+<COMMENT>.                  {}
+<COMMENT>\n                 {}
+
+[\n\t ]                     {}
+.                           { return -1; }
 
 %%
 int yywrap() {
