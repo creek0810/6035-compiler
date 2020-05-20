@@ -5,7 +5,7 @@ SymbolTable *TABLE = NULL;
 int TABLE_NUM = 0;
 
 /* function */
-SymbolTable *push_symbol_table() {
+void push_symbol_table() {
     SymbolTable *new_table = calloc(1, sizeof(SymbolTable));
     new_table->prev = TABLE;
     TABLE = new_table;
@@ -35,62 +35,28 @@ Symbol *find_symbol(char *name) {
 }
 
 /* upsert function */
-void upsert_number_symbol(char *name, int value) {
+void upsert_symbol(char *name, Object *obj) {
     Symbol *cur_symbol = find_symbol(name);
     if(cur_symbol) {
-        update_number(cur_symbol->value, value);
+        // obj assign may allocate a new obj
+        cur_symbol->value = obj_assign(cur_symbol->value, obj);
     } else {
         cur_symbol = calloc(1, sizeof(Symbol));
         if(cur_symbol == NULL) {
             printf("symbol malloc error: %s\n", name);
         }
-
         // set attribute
         cur_symbol->name = strdup(name);
-        cur_symbol->value = new_number(value);
+
+        // TODO: finish this
+        cur_symbol->value = copy_obj(obj);
+
         cur_symbol->prev = TABLE->head;
         // insert into table
         TABLE->head = cur_symbol;
     }
 }
 
-void upsert_str_symbol(char *name, char *str) {
-    Symbol *cur_symbol = find_symbol(name);
-    if(cur_symbol) {
-        update_str(cur_symbol->value, str);
-    } else {
-        cur_symbol = calloc(1, sizeof(Symbol));
-        if(cur_symbol == NULL) {
-            printf("symbol malloc error: %s\n", name);
-        }
-
-        // set attribute
-        cur_symbol->name = strdup(name);
-        cur_symbol->value = new_str(str);
-        cur_symbol->prev = TABLE->head;
-        // insert into table
-        TABLE->head = cur_symbol;
-    }
-}
-
-void upsert_array_symbol(char *name, Object *value) {
-    Symbol *cur_symbol = find_symbol(name);
-    if(cur_symbol) {
-        cur_symbol->value = value;
-    } else {
-        cur_symbol = calloc(1, sizeof(Symbol));
-        if(cur_symbol == NULL) {
-            printf("symbol malloc error: %s\n", name);
-        }
-
-        // set attribute
-        cur_symbol->name = strdup(name);
-        cur_symbol->value = value;
-        cur_symbol->prev = TABLE->head;
-        // insert into table
-        TABLE->head = cur_symbol;
-    }
-}
 /* debug function */
 void print_table() {
     int number = TABLE_NUM;

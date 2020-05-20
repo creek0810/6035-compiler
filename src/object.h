@@ -49,16 +49,15 @@ Object *new_array();
 Object *new_number(int num);
 Object *new_str(char *str);
 
-// update function
-// TODO: support array action
-Object *update_number(Object *obj, int num);
-Object *update_str(Object *obj, char *str);
+// destruct function
+void free_obj(Object *a);
+
+// copy function
+Object *copy_obj(Object *a);
 
 // array function
-void push_array_number(Object *a, int num);
-void push_array_str(Object *a, char *str);
-Object *array_get(Object *a, int idx);
-
+void array_push(Object *a, Object *b);
+Object *array_get(Object *a, int idx, bool is_reference);
 
 // operation function
 Object *obj_add(Object *a, Object *b);
@@ -77,12 +76,13 @@ Object *obj_eq(Object *a, Object *b);
 Object *obj_ne(Object *a, Object *b);
 Object *obj_lt(Object *a, Object *b); // lt, gt
 Object *obj_le(Object *a, Object *b); // le, ge
+Object *obj_not(Object *a);
+Object *obj_bit_not(Object *a);
 Object *obj_len(Object *a);
+Object *obj_to_int(Object *a);
+Object *obj_assign(Object *a, Object *b);
+bool obj_is_true(Object *a);
+void obj_print(Object *a);
 
-/* another function */
-bool is_true(Object *obj);
-Object *to_int(Object *obj);
-
-/* debug function */
-void print_object(Object *obj);
+void print_object(Object *a);
 #endif

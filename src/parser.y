@@ -121,6 +121,7 @@ opt_expression: { $$ = NULL; }
 
 
 /* expression */
+/* TODO: finish array assign here */
 expression: logical_or_expression { $$ = $1; }
           | IDENT ASSIGN expression { $$ = new_assign_node($1, $3); }
           | IDENT ASSIGN expression { $$ = new_assign_node($1, $3); }

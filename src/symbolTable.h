@@ -24,14 +24,12 @@ struct SymbolTable {
 
 
 /* function */
-SymbolTable *push_symbol_table();
+void push_symbol_table();
 void pop_symbol_table();
 Symbol *find_symbol(char *name);
 
 /* upsert function */
-void upsert_number_symbol(char *name, int value);
-void upsert_str_symbol(char *name, char *str);
-void upsert_array_symbol(char *name, Object *value);
+void upsert_symbol(char *name, Object *obj);
 
 /* debug function */
 void print_table();

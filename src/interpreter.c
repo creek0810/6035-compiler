@@ -1,7 +1,14 @@
 #include "interpreter.h"
 
+
+
+// CONTINUE FLAG
+int JUMP_STMT = 0;
+
+
+
 void run(char *file_name);
-Object *run_node(Node *cur_node);
+Object *run_node(Node *cur_node, bool need_return);
 Object *run_block_node(Node *cur_node);
 Object *run_binary_node(Node *cur_node);
 Object *run_if_node(Node *cur_node);
@@ -18,43 +25,63 @@ void run(char *file_name) {
     yyin = fopen(file_name, "r");
     yyparse();
     fclose(yyin);
-    run_node(tree);
+    run_node(tree, false);
 }
 
-Object *run_node(Node *cur_node) {
+Object *run_node(Node *cur_node, bool need_return) {
 
-    if(cur_node == NULL) return 0;
+    if(cur_node == NULL) return NULL;
 
     ASTType cur_type = cur_node->type;
+    Object *result = NULL;
     switch(cur_type) {
         case binaryNode:
-            return run_binary_node(cur_node);
+            result = run_binary_node(cur_node);
+            break;
         case unaryNode:
-            return run_unary_node(cur_node);
+            result = run_unary_node(cur_node);
+            break;
         case strNode:
-            return new_str(cur_node->node.str_node);
+            result = new_str(cur_node->node.str_node);
+            break;
         case numberNode:
-            return new_number(cur_node->node.number_node);
+            result = new_number(cur_node->node.number_node);
+            break;
         case identNode:
-            return run_ident_node(cur_node);
+            result = run_ident_node(cur_node);
+            break;
         case ifNode:
-            return run_if_node(cur_node);
+            result = run_if_node(cur_node);
+            break;
         case forNode:
-            return run_for_node(cur_node);
+            result = run_for_node(cur_node);
+            break;
         case blockNode:
-            return run_block_node(cur_node);
+            result = run_block_node(cur_node);
+            break;
         case assignNode:
-            return run_assign_node(cur_node);
+            result = run_assign_node(cur_node);
+            break;
         case arrayNode:
-            return run_array_node(cur_node);
+            result = run_array_node(cur_node);
+            break;
         /* built_int function */
         case printNode:
-            return run_print_node(cur_node);
+            result = run_print_node(cur_node);
+            break;
         case lenNode:
-            return run_len_node(cur_node);
+            result = run_len_node(cur_node);
+            break;
         default:
             printf("undefined node: %d\n", cur_type);
             return NULL;
+    }
+
+    if(need_return) {
+        return result;
+    } else {
+        free_obj(result);
+        return NULL;
     }
 }
 
@@ -63,7 +90,10 @@ Object *run_block_node(Node *cur_node) {
     NodeList *cur_ptr = cur_node->node.block_node->head;
     while(cur_ptr) {
         if(cur_ptr->node) {
-            run_node(cur_ptr->node);
+            run_node(cur_ptr->node, false);
+            if(JUMP_STMT == BREAK_FLAG || JUMP_STMT == CONTINUE_FLAG) {
+                break;
+            }
         }
         cur_ptr = cur_ptr->next;
     }
@@ -72,64 +102,91 @@ Object *run_block_node(Node *cur_node) {
 }
 
 Object *run_binary_node(Node *cur_node) {
-    Object *left_value = run_node(cur_node->node.binary_node->lhs);
-    Object *right_value = run_node(cur_node->node.binary_node->rhs);
+    Object *left_value = run_node(cur_node->node.binary_node->lhs, true);
+    Object *right_value = run_node(cur_node->node.binary_node->rhs, true);
 
+
+
+    Object *result = NULL;
     Operator op = cur_node->node.binary_node->op;
     switch(op) {
         case add:
-            return obj_add(left_value, right_value);
+            result = obj_add(left_value, right_value);
+            break;
         case sub:
-            return obj_sub(left_value, right_value);
+            result = obj_sub(left_value, right_value);
+            break;
         case mul:
-            return obj_mul(left_value, right_value);
+            result = obj_mul(left_value, right_value);
+            break;
         case mod:
-            return obj_mod(left_value, right_value);
+            result = obj_mod(left_value, right_value);
+            break;
         case div_:
-            return obj_div(left_value, right_value);
+            result = obj_div(left_value, right_value);
+            break;
         case and:
-            return obj_and(left_value, right_value);
+            result = obj_and(left_value, right_value);
+            break;
         case or:
-            return obj_or(left_value, right_value);
+            result = obj_or(left_value, right_value);
+            break;
         case xor:
-            return obj_xor(left_value, right_value);
+            result = obj_xor(left_value, right_value);
+            break;
         case logic_or:
-            return obj_logic_or(left_value, right_value);
+            result = obj_logic_or(left_value, right_value);
+            break;
         case logic_and:
-            return obj_logic_and(left_value, right_value);
+            result = obj_logic_and(left_value, right_value);
+            break;
         case shl:
-            return obj_shl(left_value, right_value);
+            result = obj_shl(left_value, right_value);
+            break;
         case shr:
-            return obj_shr(left_value, right_value);
+            result = obj_shr(left_value, right_value);
+            break;
         case eq:
-            return obj_eq(left_value, right_value);
+            result = obj_eq(left_value, right_value);
+            break;
         case ne:
-            return obj_ne(left_value, right_value);
+            result = obj_ne(left_value, right_value);
+            break;
         case lt:
-            return obj_lt(left_value, right_value);
+            result = obj_lt(left_value, right_value);
+            break;
         case gt:
-            return obj_lt(right_value, left_value);
+            result = obj_lt(right_value, left_value);
+            break;
         case le:
-            return obj_le(left_value, right_value);
+            result = obj_le(left_value, right_value);
+            break;
         case ge:
-            return obj_le(right_value, left_value);
+            result = obj_le(right_value, left_value);
+            break;
         case getArray:
             //TODO: warning for idx should be number
-            return array_get(left_value, right_value->value.number);
+            result = array_get(left_value, right_value->value.number);
+            break;
         default:
             printf("unexpected binary node: %d\n", op);
             return NULL;
     }
+    free_obj(left_value);
+    free_obj(right_value);
+
+    return result;
 }
 
 Object *run_if_node(Node *cur_node) {
-    Object *cond = run_node(cur_node->node.if_node->condition);
+    Object *cond = run_node(cur_node->node.if_node->condition, true);
 
-    if(is_true(cond)) {
-        run_node(cur_node->node.if_node->true_action);
+    if(obj_is_true(cond)) {
+        run_node(cur_node->node.if_node->true_action, false);
     } else {
-        run_node(cur_node->node.if_node->false_action);
+        run_node(cur_node->node.if_node->false_action, false);
     }
+    free_obj(cond);
     return NULL;
 }
 
@@ -141,46 +198,50 @@ Object *run_ident_node(Node *cur_node) {
         printf("undefined symbol: %s\n", symbol_name);
         return NULL;
     }
-    return cur_ident->value;
+    /*
+        number: value
+        str: value
+        array: reference
+    */
+    return copy_obj(cur_ident->value);
 }
 
 Object *run_assign_node(Node *cur_node) {
     char *name = cur_node->node.assign_node->name;
-    Object *value = run_node(cur_node->node.assign_node->value);
-    // TODO: support array action
-    // TODO: support a = b = c
+    Object *value = run_node(cur_node->node.assign_node->value, true);
     if(value == NULL) {
         printf("assign null value\n");
         exit(1);
     }
 
-    switch (value->type) {
-        case number:
-            upsert_number_symbol(name, value->value.number);
-            return NULL;
-        case string:
-            upsert_str_symbol(name, value->value.str.value);
-            return NULL;
-        case array:
-            upsert_array_symbol(name, value);
-            return NULL;
-        default:
-            printf("assign unexpected object type: %d\n", value->type);
-            return NULL;
-    }
+    upsert_symbol(name, value);
+    free_obj(value);
+    return NULL;
 }
 
 Object *run_for_node(Node *cur_node) {
     push_symbol_table();
 
     // run init
-    run_node(cur_node->node.for_node->init);
+    run_node(cur_node->node.for_node->init, false);
 
-    // TODO: handle continue break
-    while (is_true(run_node(cur_node->node.for_node->stop))) {
-        run_node(cur_node->node.for_node->action);
-        run_node(cur_node->node.for_node->after);
+
+    Object *cond = run_node(cur_node->node.for_node->stop, true);
+
+    while(obj_is_true(cond)) {
+        run_node(cur_node->node.for_node->action, false);
+        if(JUMP_STMT == BREAK_FLAG) {
+            JUMP_STMT = 0;
+            break;
+        } else if(JUMP_STMT == CONTINUE_FLAG) {
+            JUMP_STMT = 0;
+        }
+        run_node(cur_node->node.for_node->after, false);
+
+        free_obj(cond);
+        cond = run_node(cur_node->node.for_node->stop, true);
     }
+    free_obj(cond);
     pop_symbol_table();
     return NULL;
 }
@@ -190,66 +251,39 @@ Object *run_array_node(Node *cur_node) {
     NodeList *cur_ptr = cur_node->node.array_node->head;
     while(cur_ptr) {
         ASTType cur_type = cur_ptr->node->type;
+        Object *push_obj = NULL;
         switch(cur_type) {
             case numberNode:
-                push_array_number(result, cur_ptr->node->node.number_node);
+                push_obj = new_number(cur_ptr->node->node.number_node);
                 break;
             case strNode:
-                push_array_str(result, cur_ptr->node->node.str_node);
+                push_obj = new_str(cur_ptr->node->node.str_node);
                 break;
             default:
                 printf("unexpected type in array: %d\n", cur_type);
-
-
+                exit(1);
         }
+        array_push(result, push_obj);
+        free_obj(push_obj);
         cur_ptr = cur_ptr->next;
     }
     return result;
 }
 
 Object *run_print_node(Node *cur_node) {
-    Object *result = run_node(cur_node->node.print_node);
 
-    if(result == NULL) {
-        printf("NULL\n");
-        return NULL;
-    }
+    Object *result = run_node(cur_node->node.print_node, true);
+    obj_print(result);
 
-    switch (result->type) {
-        case number:
-            printf("%d\n", result->value.number);
-            break;
-        case string:
-            printf("%s\n", result->value.str.value);
-            break;
-        case array: {
-            printf("[");
-            Object **cur_array = result->value.array.array;
-            for(int i=0; i<result->value.array.capacity; i++) {
-                if(i) printf(", ");
-                if(cur_array[i]->type == number) {
-                    printf("%d", cur_array[i]->value.number);
-                } else {
-                    printf("\"%s\"", cur_array[i]->value.str.value);
-                }
-            }
-            printf("]\n");
-            break;
-        }
-        default:
-            printf("print unexpected type object: %d\n", result->type);
-    }
-
+    free_obj(result);
     return NULL;
 }
 
 Object *run_len_node(Node *cur_node) {
-    Object *value = run_node(cur_node->node.len_node);
-    if(value == NULL) {
-        printf("undefined var\n");
-        exit(1);
-    }
-    return obj_len(value);
+    Object *value = run_node(cur_node->node.len_node, true);
+    Object *result = obj_len(value);
+    free_obj(value);
+    return result;
 }
 
 Object *run_unary_node(Node *cur_node) {
@@ -263,18 +297,32 @@ Object *run_unary_node(Node *cur_node) {
             return new_str(buffer);
         }
         case toInt: {
-            Object *tmp = run_node(cur_node->node.unary_node->child);
-            return to_int(tmp);
+            Object *tmp = run_node(cur_node->node.unary_node->child, true);
+            Object *result = obj_to_int(tmp);
+            free_obj(tmp);
+            return result;
         }
-
+        case continue_:
+            JUMP_STMT = CONTINUE_FLAG;
+            break;
+        case break_:
+            JUMP_STMT = BREAK_FLAG;
+            break;
+        case not: {
+            Object *tmp = run_node(cur_node->node.unary_node->child, true);
+            Object *result = obj_not(tmp);
+            free_obj(tmp);
+            return result;
+        }
+        case bit_not: {
+            Object *tmp = run_node(cur_node->node.unary_node->child, true);
+            Object *result = obj_bit_not(tmp);
+            free_obj(tmp);
+            return result;
+        }
+        default:
+            printf("unexpected unary node: %d\n", op);
+            break;
     }
     return NULL;
 }
-/* TODO: finish unary node */
-/*
-    not = 17,
-    bit_not = 18,
-    break_ = 20,
-    continue_ = 21,
-    assign = 22
-*/
