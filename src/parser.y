@@ -22,7 +22,7 @@ void yyerror(const char* msg) {
 // built in function
 %token PRINT APPEND LEN INPUT INT
 // punc token
-%token SHL SHR LE GE EQ NE LOGIC_AND LOGIC_OR SPREAD PAST SEMI L_CURLY R_CURLY L_PARA R_PARA L_BRACKET R_BRACKET OR AND XOR ADD SUB MUL DIV MOD LT GT TILDE EXCLAM COMMA ASSIGN
+%token SHL SHR LE GE EQ NE LOGIC_AND LOGIC_OR SEMI L_CURLY R_CURLY L_PARA R_PARA L_BRACKET R_BRACKET OR AND XOR ADD SUB MUL DIV MOD LT GT TILDE EXCLAM COMMA ASSIGN
 // const token
 %token <num> NUMBER
 %token <str> STR
@@ -56,7 +56,7 @@ void yyerror(const char* msg) {
 %type <node> array
 
 
-
+%right ASSIGN
 
 // config
 %start program
@@ -121,10 +121,10 @@ opt_expression: { $$ = NULL; }
 
 
 /* expression */
-/* TODO: finish array assign here */
 expression: logical_or_expression { $$ = $1; }
-          | IDENT ASSIGN expression { $$ = new_assign_node($1, $3); }
-          | IDENT ASSIGN expression { $$ = new_assign_node($1, $3); }
+          | postfix_expression ASSIGN expression {
+              $$ = new_assign_node($1, $3);
+          }
           ;
 
 logical_or_expression: logical_and_expression { $$ = $1; }
@@ -226,7 +226,6 @@ unary_expression: postfix_expression { $$ = $1; }
                 }
                 ;
 
-/* TODO: support append function */
 postfix_expression: primary_expression { $$ = $1; }
                   | postfix_expression L_BRACKET expression R_BRACKET {
                       $$ = new_binary_node($1, $3, getArray);
@@ -242,6 +241,9 @@ postfix_expression: primary_expression { $$ = $1; }
                   }
                   | INT L_PARA expression R_PARA {
                       $$ = new_unary_node($3, toInt);
+                  }
+                  | APPEND L_PARA IDENT COMMA expression R_PARA {
+                      $$ = new_append_node($3, $5);
                   }
                   ;
 
@@ -430,11 +432,22 @@ void print_array_node(Node *cur_node, int depth) {
 void print_assign_node(Node *cur_node, int depth) {
     printf("%*sassign node:\n", depth * 4, " ");
     // print name
-    printf("%*sname: %s\n", (depth + 1) * 4, " ", cur_node->node.assign_node->name);
+    printf("%*sident:\n", (depth + 1) * 4, " ");
+    print_node(cur_node->node.assign_node->ident, depth + 2);
     // print value
     printf("%*svalue:\n", (depth + 1) * 4, " ");
     print_node(cur_node->node.assign_node->value, depth + 2);
 }
+
+void print_append_node(Node *cur_node, int depth) {
+    printf("%*sappend node:\n", depth * 4, " ");
+    // print name
+    printf("%*sname: %s\n", (depth + 1) * 4, " ", cur_node->node.append_node->name);
+    // print value
+    printf("%*svalue:\n", (depth + 1) * 4, " ");
+    print_node(cur_node->node.append_node->value, depth + 2);
+}
+
 
 void print_node(Node *cur_node, int depth) {
     if(cur_node == NULL) return;
@@ -466,6 +479,9 @@ void print_node(Node *cur_node, int depth) {
             break;
         case assignNode:
             print_assign_node(cur_node, depth);
+            break;
+        case appendNode:
+            print_append_node(cur_node, depth);
             break;
         case printNode:
             printf("%*sprint:\n", depth * 4 , " ");

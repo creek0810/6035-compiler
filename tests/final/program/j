@@ -1,62 +1,50 @@
 a = input();
 // get number 1, 2, 3
 buffer = "";
-num1 = 0;
-num2 = 0;
-num3 = 0;
-cnt = 0;
+num = [];
 for(i=0; i<len(a); i=i+1) {
     if(a[i] == " ") {
-        tmp = int(buffer);
-        if(cnt == 0) {
-            num1 = tmp;
-        } else {
-            num2 = tmp;
-        }
-        cnt = cnt + 1;
+        append(num, int(buffer));
         buffer = "";
     } else {
         buffer = buffer + a[i];
     }
 }
-tmp = int(buffer);
-num3 = tmp;
+append(num, int(buffer));
+
 // sort
-if(num3 < num2) {
-    tmp = num2;
-    num2 = num3;
-    num3 = tmp;
-}
-if(num2 < num1) {
-    tmp = num1;
-    num1 = num2;
-    num2 = tmp;
+if(num[2] < num[1]) {
+    tmp = num[1];
+    num[1] = num[2];
+    num[2] = tmp;
 }
 
-if(num3 < num2) {
-    tmp = num2;
-    num2 = num3;
-    num3 = tmp;
+if(num[1] < num[0]) {
+    tmp = num[0];
+    num[0] = num[1];
+    num[1] = tmp;
+}
+
+if(num[2] < num[1]) {
+    tmp = num[1];
+    num[1] = num[2];
+    num[2] = tmp;
 }
 
 
-
-
-
-
-if(num1 == num2 && num2 == num3) {
+if(num[0] == num[1] && num[1] == num[2]) {
     print("豹子");
 } else {
-    if(num1 == num2) {
-        print(num3);
+    if(num[0] == num[1]) {
+        print(num[2]);
     } else {
-        if(num2 == num3) {
-            print(num1);
+        if(num[1] == num[2]) {
+            print(num[0]);
         } else {
-            if(num1 == 1 && num2 == 2 && num3 == 3) {
+            if(num[0] == 1 && num[1] == 2 && num[2] == 3) {
                 print("BG");
             } else {
-                if(num1 == 4 && num2 == 5 && num3 == 6) {
+                if(num[0] == 4 && num[1] == 5 && num[2] == 6) {
                     print("456");
                 } else {
                     print("沒點");

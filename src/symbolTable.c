@@ -5,6 +5,7 @@ SymbolTable *TABLE = NULL;
 int TABLE_NUM = 0;
 
 /* function */
+// TODO: support free table
 void push_symbol_table() {
     SymbolTable *new_table = calloc(1, sizeof(SymbolTable));
     new_table->prev = TABLE;
@@ -47,10 +48,7 @@ void upsert_symbol(char *name, Object *obj) {
         }
         // set attribute
         cur_symbol->name = strdup(name);
-
-        // TODO: finish this
         cur_symbol->value = copy_obj(obj);
-
         cur_symbol->prev = TABLE->head;
         // insert into table
         TABLE->head = cur_symbol;

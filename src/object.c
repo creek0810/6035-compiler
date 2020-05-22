@@ -1,16 +1,11 @@
 #include "object.h"
-/*
-OBJECT_POOL
-*/
-
-
-
-
+ObjectNode *OBJECT_POOL = NULL;
 
 /* construct function */
 Object *new_array() {
     Object *cur_obj = calloc(1, sizeof(Object));
     cur_obj->type = array;
+    pool_insert_obj(cur_obj);
     return cur_obj;
 }
 
@@ -18,6 +13,7 @@ Object *new_number(int num) {
     Object *cur_obj = calloc(1, sizeof(Object));
     cur_obj->type = number;
     cur_obj->value.number = num;
+    pool_insert_obj(cur_obj);
     return cur_obj;
 }
 
@@ -26,6 +22,7 @@ Object *new_str(char *str) {
     cur_obj->type = string;
     cur_obj->value.str.value = strdup(str);
     cur_obj->value.str.length = strlen(str);
+    pool_insert_obj(cur_obj);
     return cur_obj;
 }
 
@@ -77,6 +74,7 @@ Object *copy_obj(Object *a) {
         case string:
             return new_str(a->value.str.value);
         case array:
+            pool_insert_obj(a);
             return a;
         default:
             printf("unexpected type of ident: %d\n", a->type);
@@ -84,24 +82,6 @@ Object *copy_obj(Object *a) {
     }
 }
 
-void free_obj(Object *a) {
-    if(a == NULL) return;
-
-    switch(a->type) {
-        case number:
-            free(a);
-            break;
-        case string:
-            free(a->value.str.value);
-            free(a);
-            break;
-        // TODO: support array
-        case array:
-            break;
-    }
-}
-
-// TODO: finish clear_obj
 void clear_obj(Object *a) {
     if(a == NULL) return;
 
@@ -115,7 +95,12 @@ void clear_obj(Object *a) {
         case array:
             break;
     }
+}
 
+void free_obj(Object *a) {
+    if(a == NULL) return;
+    clear_obj(a);
+    free(a);
 }
 
 /* array function */
@@ -144,6 +129,7 @@ void array_push(Object *a, Object *b) {
 }
 
 Object *array_get(Object *a, int idx, bool is_reference) {
+
     switch(a->type) {
         case array:
             if(is_reference) {
@@ -180,7 +166,6 @@ Object *obj_add(Object *a, Object *b) {
             strcat(tmp, b->value.str.value);
             // use concate result to construct string object
             Object *result = new_str(tmp);
-            free(tmp);
             return result;
         }
         default:
@@ -375,8 +360,13 @@ Object *obj_lt(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number < b->value.number);
-        case string:
-        // TODO: support string
+        case string: {
+            if(strcmp(a->value.str.value, b->value.str.value) < 0) {
+                return new_number(1);
+            } else {
+                return new_number(0);
+            }
+        }
         default:
             print_op_error("<", a, b);
             return NULL;
@@ -391,8 +381,13 @@ Object *obj_le(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number <= b->value.number);
-        case string:
-        // TODO: support string
+        case string: {
+            if(strcmp(a->value.str.value, b->value.str.value) <= 0) {
+                return new_number(1);
+            } else {
+                return new_number(0);
+            }
+        }
         default:
             print_op_error("<=", a, b);
             return NULL;
@@ -454,7 +449,6 @@ void obj_print(Object *a) {
         return;
     }
 
-
     switch (a->type) {
         case number:
             printf("%d\n", a->value.number);
@@ -482,7 +476,6 @@ void obj_print(Object *a) {
 }
 
 
-/* TODO: finish this function */
 Object *obj_assign(Object *a, Object *b) {
     if(a->type != array && b->type != array) {
         clear_obj(a);
@@ -495,22 +488,99 @@ Object *obj_assign(Object *a, Object *b) {
             a->value.str.length = b->value.str.length;
         }
         return a;
+    } else {
+        pool_delete_obj(a);
+        return copy_obj(b);
     }
     return NULL;
-
-
 }
-/*
-Object *update_str(Object *obj, char *str) {
-    if(obj->type != string) {
-        clear_object(obj);
+
+
+void obj_array_assign(Object *arr, Object *idx, Object *value) {
+    if(arr->type != array || idx->type != number || value->type == array) {
+        printf("TypeError: array assign type error\n");
+        return;
     }
-    obj->type = string;
-    obj->value.str.value = strdup(str);
-    obj->value.str.length = strlen(str);
-    return obj;
+    if(arr->value.array.capacity <= idx->value.number) {
+        printf("IndexError: index out of array");
+        return;
+    }
+    Object *el = arr->value.array.array[idx->value.number];
+    clear_obj(el);
+    // copy value
+    el->type = value->type;
+    if(value->type == number) {
+        el->value.number = value->value.number;
+    } else {
+        el->value.str.value = strdup(value->value.str.value);
+        el->value.str.length = value->value.str.length;
+    }
 }
+
+
+/* obj pool function */
+/*
+    pool_insert_obj: it will be called when construct obj(new_number, new_array, new_array) and obj_assign
+    pool_delete_obj: it will be called when free_obj
 */
+
+
+ObjectNode *pool_find_obj(Object *a) {
+    ObjectNode *cur_node = OBJECT_POOL;
+    while(cur_node) {
+        if(cur_node->addr == a) {
+            return cur_node;
+        }
+        cur_node = cur_node->next;
+    }
+    return NULL;
+}
+
+ObjectNode *pool_new_obj(Object *addr) {
+    ObjectNode *result = calloc(1, sizeof(ObjectNode));
+    result->num = 1;
+    result->addr = addr;
+    return result;
+}
+
+void pool_insert_obj(Object *a) {
+    if(a == NULL) return;
+
+    ObjectNode *cur_node = pool_find_obj(a);
+    if(cur_node) {
+        cur_node->num += 1;
+        return;
+    }
+    // new pool obj
+    cur_node = pool_new_obj(a);
+    cur_node->next = OBJECT_POOL;
+    if(OBJECT_POOL) {
+        OBJECT_POOL->prev = cur_node;
+    }
+    OBJECT_POOL = cur_node;
+}
+
+void pool_delete_obj(Object *a) {
+    if(a == NULL) return;
+
+    ObjectNode *cur_node = pool_find_obj(a);
+    if(cur_node) {
+        cur_node->num -= 1;
+        if(cur_node->num == 0) {
+
+            free_obj(a);
+            if(cur_node->prev) {
+                cur_node->prev->next = cur_node->next;
+            } else {
+                OBJECT_POOL = cur_node->next;
+            }
+            if(cur_node->next) {
+                cur_node->next->prev = cur_node->prev;
+            }
+        }
+    }
+}
+
 
 /* debug function */
 void print_object(Object *obj) {

@@ -40,20 +40,33 @@ Node *new_node(void *cur_node, ASTType type) {
         case arrayNode:
             result->node.array_node = cur_node;
             break;
+        case appendNode:
+            result->node.append_node = cur_node;
+            break;
         default:
             printf("undefined node type: %d\n", type);
     }
     return result;
 }
 
-Node *new_assign_node(char *name, Node *value) {
+Node *new_assign_node(Node *ident, Node *value) {
     AssignNode *cur_node = calloc(1, sizeof(AssignNode));
+    if(cur_node == NULL) {
+        return NULL;
+    }
+    cur_node->ident = ident;
+    cur_node->value = value;
+    return new_node(cur_node, assignNode);
+}
+
+Node *new_append_node(char *name, Node *value) {
+    AppendNode *cur_node = calloc(1, sizeof(AppendNode));
     if(cur_node == NULL) {
         return NULL;
     }
     cur_node->name = strdup(name);
     cur_node->value = value;
-    return new_node(cur_node, assignNode);
+    return new_node(cur_node, appendNode);
 }
 
 Node *new_binary_node(Node *lhs, Node *rhs, Operator op) {

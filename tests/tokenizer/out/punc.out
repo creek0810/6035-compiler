@@ -26,14 +26,4 @@ punc: &&
 punc: ||
 punc: ;
 punc: =
-punc: *=
-punc: /=
-punc: %=
-punc: +=
-punc: -=
-punc: <<=
-punc: >>=
-punc: &=
-punc: ^=
-punc: |=
 punc: ,

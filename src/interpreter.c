@@ -17,9 +17,11 @@ Object *run_assign_node(Node *cur_node);
 Object *run_for_node(Node *cur_node);
 Object *run_array_node(Node *cur_node);
 Object *run_unary_node(Node *cur_node);
+Object *run_array_assign_node(Node *cur_node);
 // built_in function
 Object *run_print_node(Node *cur_node);
 Object *run_len_node(Node *cur_node);
+Object *run_append_node(Node *cur_node);
 
 void run(char *file_name) {
     yyin = fopen(file_name, "r");
@@ -72,6 +74,9 @@ Object *run_node(Node *cur_node, bool need_return) {
         case lenNode:
             result = run_len_node(cur_node);
             break;
+        case appendNode:
+            result = run_append_node(cur_node);
+            break;
         default:
             printf("undefined node: %d\n", cur_type);
             return NULL;
@@ -80,7 +85,7 @@ Object *run_node(Node *cur_node, bool need_return) {
     if(need_return) {
         return result;
     } else {
-        free_obj(result);
+        pool_delete_obj(result);
         return NULL;
     }
 }
@@ -101,14 +106,28 @@ Object *run_block_node(Node *cur_node) {
     return NULL;
 }
 
-Object *run_binary_node(Node *cur_node) {
+/* TODO: finish idx type checking */
+Object *run_array_get_node(Node *cur_node, bool is_reference) {
     Object *left_value = run_node(cur_node->node.binary_node->lhs, true);
     Object *right_value = run_node(cur_node->node.binary_node->rhs, true);
-
-
-
     Object *result = NULL;
+    result = array_get(left_value, right_value->value.number, is_reference);
+    pool_delete_obj(left_value);
+    pool_delete_obj(right_value);
+    return result;
+}
+
+Object *run_binary_node(Node *cur_node) {
+
     Operator op = cur_node->node.binary_node->op;
+    // getArray is a special case
+    if(op == getArray) {
+        return run_array_get_node(cur_node, false);
+    }
+
+    Object *left_value = run_node(cur_node->node.binary_node->lhs, true);
+    Object *right_value = run_node(cur_node->node.binary_node->rhs, true);
+    Object *result = NULL;
     switch(op) {
         case add:
             result = obj_add(left_value, right_value);
@@ -164,16 +183,12 @@ Object *run_binary_node(Node *cur_node) {
         case ge:
             result = obj_le(right_value, left_value);
             break;
-        case getArray:
-            //TODO: warning for idx should be number
-            result = array_get(left_value, right_value->value.number);
-            break;
         default:
             printf("unexpected binary node: %d\n", op);
             return NULL;
     }
-    free_obj(left_value);
-    free_obj(right_value);
+    pool_delete_obj(left_value);
+    pool_delete_obj(right_value);
 
     return result;
 }
@@ -186,7 +201,7 @@ Object *run_if_node(Node *cur_node) {
     } else {
         run_node(cur_node->node.if_node->false_action, false);
     }
-    free_obj(cond);
+    pool_delete_obj(cond);
     return NULL;
 }
 
@@ -207,19 +222,43 @@ Object *run_ident_node(Node *cur_node) {
 }
 
 Object *run_assign_node(Node *cur_node) {
-    char *name = cur_node->node.assign_node->name;
-    Object *value = run_node(cur_node->node.assign_node->value, true);
-    if(value == NULL) {
-        printf("assign null value\n");
-        exit(1);
-    }
+    Node *ident_node = cur_node->node.assign_node->ident;
+    // ident assign
+    if(ident_node->type == identNode) {
+        char *name = ident_node->node.ident_node;
+        Object *value = run_node(cur_node->node.assign_node->value, true);
+        if(value == NULL) {
+            printf("assign null value\n");
+            exit(1);
+        }
 
-    upsert_symbol(name, value);
-    free_obj(value);
+        upsert_symbol(name, value);
+        pool_delete_obj(value);
+        return NULL;
+    // array assign
+    } else if(ident_node->type == binaryNode && ident_node->node.binary_node->op == getArray) {
+
+        Object *cur_array = run_node(ident_node->node.binary_node->lhs, true);
+        Object *idx = run_node(ident_node->node.binary_node->rhs, true);
+
+        Object *value = run_node(cur_node->node.assign_node->value, true);
+        if(value == NULL || idx == NULL) {
+            printf("assign null value\n");
+            exit(1);
+        }
+        obj_array_assign(cur_array, idx, value);
+        pool_delete_obj(cur_array);
+        pool_delete_obj(idx);
+        pool_delete_obj(value);
+
+        return NULL;
+    }
+    printf("assign error\n");
     return NULL;
 }
 
 Object *run_for_node(Node *cur_node) {
+
     push_symbol_table();
 
     // run init
@@ -238,10 +277,10 @@ Object *run_for_node(Node *cur_node) {
         }
         run_node(cur_node->node.for_node->after, false);
 
-        free_obj(cond);
+        pool_delete_obj(cond);
         cond = run_node(cur_node->node.for_node->stop, true);
     }
-    free_obj(cond);
+    pool_delete_obj(cond);
     pop_symbol_table();
     return NULL;
 }
@@ -264,7 +303,7 @@ Object *run_array_node(Node *cur_node) {
                 exit(1);
         }
         array_push(result, push_obj);
-        free_obj(push_obj);
+        pool_delete_obj(push_obj);
         cur_ptr = cur_ptr->next;
     }
     return result;
@@ -275,15 +314,32 @@ Object *run_print_node(Node *cur_node) {
     Object *result = run_node(cur_node->node.print_node, true);
     obj_print(result);
 
-    free_obj(result);
+    pool_delete_obj(result);
     return NULL;
 }
 
 Object *run_len_node(Node *cur_node) {
     Object *value = run_node(cur_node->node.len_node, true);
     Object *result = obj_len(value);
-    free_obj(value);
+    pool_delete_obj(value);
     return result;
+}
+
+Object *run_append_node(Node *cur_node) {
+
+    char *name = cur_node->node.append_node->name;
+    Object *value = run_node(cur_node->node.append_node->value, true);
+    Symbol *cur_symbol = find_symbol(name);
+    if(value == NULL) {
+        printf("assign null value\n");
+        exit(1);
+    } else if(cur_symbol == NULL) {
+        printf("undefined symbol: %s\n", name);
+        exit(1);
+    }
+    array_push(cur_symbol->value, value);
+    pool_delete_obj(value);
+    return NULL;
 }
 
 Object *run_unary_node(Node *cur_node) {
@@ -299,7 +355,7 @@ Object *run_unary_node(Node *cur_node) {
         case toInt: {
             Object *tmp = run_node(cur_node->node.unary_node->child, true);
             Object *result = obj_to_int(tmp);
-            free_obj(tmp);
+            pool_delete_obj(tmp);
             return result;
         }
         case continue_:
@@ -311,13 +367,13 @@ Object *run_unary_node(Node *cur_node) {
         case not: {
             Object *tmp = run_node(cur_node->node.unary_node->child, true);
             Object *result = obj_not(tmp);
-            free_obj(tmp);
+            pool_delete_obj(tmp);
             return result;
         }
         case bit_not: {
             Object *tmp = run_node(cur_node->node.unary_node->child, true);
             Object *result = obj_bit_not(tmp);
-            free_obj(tmp);
+            pool_delete_obj(tmp);
             return result;
         }
         default:

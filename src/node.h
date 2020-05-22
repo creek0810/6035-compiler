@@ -22,6 +22,7 @@ enum ASTType{
     printNode = 10,
     arrayNode = 11,
     lenNode = 12,
+    appendNode = 13,
 };
 
 enum Operator {
@@ -64,6 +65,7 @@ typedef struct BlockNode BlockNode;
 typedef struct AssignNode AssignNode;
 typedef struct PrintNode PrintNode;
 typedef struct ArrayNode ArrayNode;
+typedef struct AppendNode AppendNode;
 typedef union NodeExtend NodeExtend;
 typedef struct Node Node;
 
@@ -99,6 +101,11 @@ struct ArrayNode {
 };
 
 struct AssignNode {
+    Node *ident;
+    Node *value;
+};
+
+struct AppendNode{
     char *name;
     Node *value;
 };
@@ -118,6 +125,7 @@ union NodeExtend{
     // built in function
     Node *print_node;
     Node *len_node;
+    AppendNode *append_node;
 };
 
 struct Node {
@@ -136,11 +144,12 @@ Node *new_number_node(int number);
 Node *new_if_node(Node *condition, Node *true_action, Node *false_action);
 Node *new_for_node(Node *init, Node *stop, Node *after, Node *action);
 Node *new_block_node();
-Node *new_assign_node(char *name, Node *value);
+Node *new_assign_node(Node *ident, Node *value);
 Node *new_ident_node(char *name);
 Node *new_print_node(Node *child);
 Node *new_len_node(Node *child);
 Node *new_array_node();
+Node *new_append_node(char *name, Node *value);
 
 // block node function
 void push_node(Node *cur_block_node, Node *cur_node);
