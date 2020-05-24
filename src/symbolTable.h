@@ -7,6 +7,11 @@
 #include <stdio.h>
 #include "object.h"
 
+/*
+    Manage obj pool and symbol table.
+    When symbol table is popped, program will call obj clean function.
+*/
+
 /* define symbol and symbol table */
 typedef struct Symbol Symbol;
 typedef struct  SymbolTable SymbolTable;
@@ -27,8 +32,6 @@ struct SymbolTable {
 void push_symbol_table();
 void pop_symbol_table();
 Symbol *find_symbol(char *name);
-
-/* upsert function */
 void upsert_symbol(char *name, Object *obj);
 
 /* debug function */

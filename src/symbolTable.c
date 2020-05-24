@@ -4,8 +4,12 @@
 SymbolTable *TABLE = NULL;
 int TABLE_NUM = 0;
 
+/* private function */
+void clean_obj_pool() {
+
+}
+
 /* function */
-// TODO: support free table
 void push_symbol_table() {
     SymbolTable *new_table = calloc(1, sizeof(SymbolTable));
     new_table->prev = TABLE;
@@ -14,8 +18,26 @@ void push_symbol_table() {
 }
 
 void pop_symbol_table() {
+    SymbolTable *popped_table = TABLE;
+    // update info
     TABLE = TABLE->prev;
     TABLE_NUM -= 1;
+
+    // free symbol
+    Symbol *cur_node = popped_table->head;
+    while(cur_node) {
+        Symbol *prev = cur_node->prev;
+
+        // free current symbol
+        // value will be freed by obj pool function
+        free(cur_node->name);
+        free(cur_node);
+
+        cur_node = prev;
+    }
+    clean_obj_pool();
+    // free symbol table
+    free(popped_table);
 }
 
 Symbol *find_symbol(char *name) {

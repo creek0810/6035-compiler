@@ -475,7 +475,6 @@ void obj_print(Object *a) {
     }
 }
 
-
 Object *obj_assign(Object *a, Object *b) {
     if(a->type != array && b->type != array) {
         clear_obj(a);
@@ -494,7 +493,6 @@ Object *obj_assign(Object *a, Object *b) {
     }
     return NULL;
 }
-
 
 void obj_array_assign(Object *arr, Object *idx, Object *value) {
     if(arr->type != array || idx->type != number || value->type == array) {
