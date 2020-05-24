@@ -1,7 +1,3 @@
-/* block comment
-    thhis is a block comment
-    hello
-*/
 a = "hello world";
 a = a + "!";
 print(a);
