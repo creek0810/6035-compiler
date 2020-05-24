@@ -85,17 +85,6 @@ void obj_array_assign(Object *arr, Object *idx, Object *value);
 bool obj_is_true(Object *a);
 void obj_print(Object *a);
 
-/* obj pool */
-typedef struct ObjectNode ObjectNode;
-struct ObjectNode {
-    int num;
-    Object *addr;
-    ObjectNode *prev, *next;
-};
-
-void pool_insert_obj(Object *a);
-void pool_delete_obj(Object *b);
-
 /* debug function */
 void print_object(Object *a);
 #endif

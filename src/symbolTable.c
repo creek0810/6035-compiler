@@ -4,9 +4,61 @@
 SymbolTable *TABLE = NULL;
 int TABLE_NUM = 0;
 
-/* private function */
-void clean_obj_pool() {
 
+/* private function */
+bool in_table(Symbol *cur_symbol) {
+    /* find in other table */
+    SymbolTable *cur_table = TABLE;
+    // find symbol in table list
+    while(cur_table) {
+        // find symbol in current table
+        Symbol *cur_node = cur_table->head;
+        while(cur_node) {
+            if(cur_symbol->value == cur_node->value) {
+                return true;
+            }
+            cur_node = cur_node->prev;
+        }
+        cur_table = cur_table->prev;
+    }
+    /* find in current table
+        warning: we will free the obj when we last see it.
+    */
+    Symbol *cur_node = cur_symbol->prev;
+    while(cur_node) {
+        if(cur_symbol->value == cur_node->value) {
+            return true;
+        }
+        cur_node = cur_node->prev;
+    }
+    return false;
+}
+
+
+
+void free_symbol(Symbol *cur_node) {
+    /*
+        char *name;
+        Object *value;
+        Symbol *prev;
+    */
+    free(cur_node->name);
+    switch(cur_node->value->type) {
+        case number:
+        case string:
+            free_obj(cur_node->value);
+            break;
+        case array:
+            if(!in_table(cur_node)) {
+                free_obj(cur_node->value);
+            }
+            break;
+        default:
+            printf("free undefined variable type(%d)\n", cur_node->value->type);
+            break;
+    }
+
+    free(cur_node);
 }
 
 /* function */
@@ -27,15 +79,10 @@ void pop_symbol_table() {
     Symbol *cur_node = popped_table->head;
     while(cur_node) {
         Symbol *prev = cur_node->prev;
-
-        // free current symbol
-        // value will be freed by obj pool function
-        free(cur_node->name);
-        free(cur_node);
-
+        free_symbol(cur_node);
         cur_node = prev;
     }
-    clean_obj_pool();
+
     // free symbol table
     free(popped_table);
 }
@@ -94,5 +141,3 @@ void print_table() {
         number --;
     }
 }
-
-

@@ -1,11 +1,9 @@
 #include "object.h"
-ObjectNode *OBJECT_POOL = NULL;
 
 /* construct function */
 Object *new_array() {
     Object *cur_obj = calloc(1, sizeof(Object));
     cur_obj->type = array;
-    pool_insert_obj(cur_obj);
     return cur_obj;
 }
 
@@ -13,7 +11,6 @@ Object *new_number(int num) {
     Object *cur_obj = calloc(1, sizeof(Object));
     cur_obj->type = number;
     cur_obj->value.number = num;
-    pool_insert_obj(cur_obj);
     return cur_obj;
 }
 
@@ -22,7 +19,6 @@ Object *new_str(char *str) {
     cur_obj->type = string;
     cur_obj->value.str.value = strdup(str);
     cur_obj->value.str.length = strlen(str);
-    pool_insert_obj(cur_obj);
     return cur_obj;
 }
 
@@ -74,7 +70,6 @@ Object *copy_obj(Object *a) {
         case string:
             return new_str(a->value.str.value);
         case array:
-            pool_insert_obj(a);
             return a;
         default:
             printf("unexpected type of ident: %d\n", a->type);
@@ -488,7 +483,6 @@ Object *obj_assign(Object *a, Object *b) {
         }
         return a;
     } else {
-        pool_delete_obj(a);
         return copy_obj(b);
     }
     return NULL;
@@ -514,71 +508,6 @@ void obj_array_assign(Object *arr, Object *idx, Object *value) {
         el->value.str.length = value->value.str.length;
     }
 }
-
-
-/* obj pool function */
-/*
-    pool_insert_obj: it will be called when construct obj(new_number, new_array, new_array) and obj_assign
-    pool_delete_obj: it will be called when free_obj
-*/
-
-
-ObjectNode *pool_find_obj(Object *a) {
-    ObjectNode *cur_node = OBJECT_POOL;
-    while(cur_node) {
-        if(cur_node->addr == a) {
-            return cur_node;
-        }
-        cur_node = cur_node->next;
-    }
-    return NULL;
-}
-
-ObjectNode *pool_new_obj(Object *addr) {
-    ObjectNode *result = calloc(1, sizeof(ObjectNode));
-    result->num = 1;
-    result->addr = addr;
-    return result;
-}
-
-void pool_insert_obj(Object *a) {
-    if(a == NULL) return;
-
-    ObjectNode *cur_node = pool_find_obj(a);
-    if(cur_node) {
-        cur_node->num += 1;
-        return;
-    }
-    // new pool obj
-    cur_node = pool_new_obj(a);
-    cur_node->next = OBJECT_POOL;
-    if(OBJECT_POOL) {
-        OBJECT_POOL->prev = cur_node;
-    }
-    OBJECT_POOL = cur_node;
-}
-
-void pool_delete_obj(Object *a) {
-    if(a == NULL) return;
-
-    ObjectNode *cur_node = pool_find_obj(a);
-    if(cur_node) {
-        cur_node->num -= 1;
-        if(cur_node->num == 0) {
-
-            free_obj(a);
-            if(cur_node->prev) {
-                cur_node->prev->next = cur_node->next;
-            } else {
-                OBJECT_POOL = cur_node->next;
-            }
-            if(cur_node->next) {
-                cur_node->next->prev = cur_node->prev;
-            }
-        }
-    }
-}
-
 
 /* debug function */
 void print_object(Object *obj) {
