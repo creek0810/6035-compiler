@@ -14,6 +14,7 @@ ID {NONDIGIT}({DIGIT}|{NONDIGIT})*
 
     /* constant */
 DEC_CONST {DIGIT}+
+DECIMAL_CONST {DIGIT}+"."{DIGIT}+
 ESC "\\v"|"\\n"|"\\'"|"\\\\"|"\\\""|"\\?"|"\\a"|"\\b"|"\\f"|"\\r"|"\\t"
 
     /* str */
@@ -39,6 +40,7 @@ STR \"{CHARACTER}*\"
 "input"                     { return INPUT; }
 "int"                       { return INT; }
 "str"                       { return STR; }
+"double"                    { return KW_DOUBLE; }
 
     /* const */
 {DEC_CONST}                 {
@@ -46,6 +48,12 @@ STR \"{CHARACTER}*\"
     yylval.num = strtoll(yytext, &tmp, 0);
     return NUMBER;
 }
+
+{DECIMAL_CONST}             {
+    yylval.decimal = atof(yytext);
+    return DOUBLE;
+}
+
 {STR}                       { yylval.str = clean_str(yytext); return STRING; }
 
     /* ident */
@@ -111,7 +119,9 @@ void print_token(char *file_name) {
     yyin = fopen(file_name, "r");
     int token;
     while(token = yylex()) {
-        if(token == IDENT) {
+        if(token == DOUBLE) {
+            printf("double: %s\n", yytext);
+        } else if(token == IDENT) {
             printf("ident: %s\n", yytext);
         } else if(token == NUMBER) {
             printf("number: %s\n", yytext);
@@ -119,7 +129,7 @@ void print_token(char *file_name) {
             printf("keyword: %s\n", yytext);
         } else if(token >= SHL && token <= ASSIGN) {
             printf("punc: %s\n", yytext);
-        } else if(token == STR) {
+        } else if(token == STRING) {
             printf("str: %s\n", yytext);
         } else if(token != -1) {
             printf("punc: %s\n", yytext);

@@ -14,6 +14,13 @@ Object *new_number(long long num) {
     return cur_obj;
 }
 
+Object *new_double(double num) {
+    Object *cur_obj = calloc(1, sizeof(Object));
+    cur_obj->type = double_;
+    cur_obj->value.double_ = num;
+    return cur_obj;
+}
+
 Object *new_str(char *str) {
     Object *cur_obj = calloc(1, sizeof(Object));
     cur_obj->type = string;
@@ -33,6 +40,9 @@ void print_type(Object *obj) {
             break;
         case array:
             printf("\'array\'");
+            break;
+        case double_:
+            printf("\'double\'");
             break;
         default:
             printf("unexpected type: %d\n", obj->type);
@@ -61,12 +71,15 @@ bool is_same_type(Object *a, Object *b) {
 Object *copy_obj(Object *a) {
     /*
         number: value
+        double: value
         str: value
         array: reference
     */
     switch(a->type) {
         case number:
             return new_number(a->value.number);
+        case double_:
+            return new_double(a->value.double_);
         case string:
             return new_str(a->value.str.value);
         case array:
@@ -82,6 +95,7 @@ void clear_obj(Object *a) {
 
     switch(a->type) {
         case number:
+        case double_:
             break;
         case string:
             free(a->value.str.value);
@@ -158,6 +172,8 @@ Object *obj_add(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number + b->value.number);
+        case double_:
+            return new_double(a->value.double_ + b->value.double_);
         case string: {
             // construct concate result
             int new_len = a->value.str.length + b->value.str.length + 1;
@@ -182,6 +198,8 @@ Object *obj_sub(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number - b->value.number);
+        case double_:
+            return new_double(a->value.double_ - b->value.double_);
         default:
             print_op_error("-", a, b);
             return NULL;
@@ -196,6 +214,8 @@ Object *obj_mul(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number * b->value.number);
+        case double_:
+            return new_double(a->value.double_ * b->value.double_);
         case string:
         // TODO: support string mul
         default:
@@ -320,6 +340,8 @@ Object *obj_eq(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number == b->value.number);
+        case double_:
+            return new_number(a->value.double_ == b->value.double_);
         case string: {
             int result = (strcmp(a->value.str.value, b->value.str.value) == 0);
             return new_number(result);
@@ -340,6 +362,8 @@ Object *obj_ne(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number != b->value.number);
+        case double_:
+            return new_number(a->value.double_ != b->value.double_);
         case string: {
             int result = (strcmp(a->value.str.value, b->value.str.value) != 0);
             return new_number(result);
@@ -360,6 +384,8 @@ Object *obj_lt(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number < b->value.number);
+        case double_:
+            return new_number(a->value.double_ < b->value.double_);
         case string: {
             if(strcmp(a->value.str.value, b->value.str.value) < 0) {
                 return new_number(1);
@@ -381,6 +407,8 @@ Object *obj_le(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number <= b->value.number);
+        case double_:
+            return new_number(a->value.double_ <= b->value.double_);
         case string: {
             if(strcmp(a->value.str.value, b->value.str.value) <= 0) {
                 return new_number(1);
@@ -424,13 +452,31 @@ Object *obj_to_int(Object *a) {
     switch(a->type) {
         case number:
             return a;
+        case double_:
+            return new_number((int)a->value.double_);
         case array:
             printf("array can't be convert to int");
             return NULL;
         case string: {
             char *tmp;
-            long long result = result = strtoll(a->value.str.value, &tmp, 0);
+            long long result = strtoll(a->value.str.value, &tmp, 0);
             return new_number(result);
+        }
+    }
+}
+
+Object *obj_to_double(Object *a) {
+    switch(a->type) {
+        case number:
+            return new_double((double)a->value.number);
+        case double_:
+            return a;
+        case array:
+            printf("array can't be convert to double");
+            return NULL;
+        case string: {
+            double result = atof(a->value.str.value);
+            return new_double(result);
         }
     }
 }
@@ -440,6 +486,11 @@ Object *obj_to_str(Object *a) {
         case number: {
             char tmp[30] = {0};
             sprintf(tmp, "%lld", a->value.number);
+            return new_str(tmp);
+        }
+        case double_: {
+            char tmp[30] = {0};
+            sprintf(tmp, "%lf", a->value.double_);
             return new_str(tmp);
         }
         case array:
@@ -453,6 +504,7 @@ Object *obj_to_str(Object *a) {
 bool obj_is_true(Object *a) {
     if(a == NULL) return false;
     if(a->type == number && a->value.number == 0) return false;
+    if(a->type == double_ && a->value.double_ == 0) return false;
     return true;
 }
 
@@ -474,10 +526,18 @@ Object *obj_print(Object *a) {
             Object **cur_array = a->value.array.array;
             for(int i=0; i<a->value.array.capacity; i++) {
                 if(i) printf(", ");
-                if(cur_array[i]->type == number) {
-                    printf("%lld", cur_array[i]->value.number);
-                } else {
-                    printf("\"%s\"", cur_array[i]->value.str.value);
+                switch(cur_array[i]->type) {
+                    case number:
+                        printf("%lld", cur_array[i]->value.number);
+                        break;
+                    case double_:
+                        printf("%lf", cur_array[i]->value.double_);
+                        break;
+                    case string:
+                        printf("\"%s\"", cur_array[i]->value.str.value);
+                        break;
+                    default:
+                        printf("print unexpected type object in array: %d\n", a->type);
                 }
             }
             printf("]\n");
@@ -496,6 +556,8 @@ Object *obj_assign(Object *a, Object *b) {
         a->type = b->type;
         if(b->type == number) {
             a->value.number = b->value.number;
+        } else if(b->type == double_) {
+            a->value.double_ = b->value.double_;
         } else {
             a->value.str.value = strdup(b->value.str.value);
             a->value.str.length = b->value.str.length;
@@ -522,6 +584,8 @@ void obj_array_assign(Object *arr, Object *idx, Object *value) {
     el->type = value->type;
     if(value->type == number) {
         el->value.number = value->value.number;
+    } else if(value->type == double_) {
+        el->value.double_ = value->value.double_;
     } else {
         el->value.str.value = strdup(value->value.str.value);
         el->value.str.length = value->value.str.length;
@@ -534,6 +598,9 @@ void print_object(Object *obj) {
         case number:
             printf("number: %lld\n", obj->value.number);
             break;
+        case double_:
+            printf("double: %lf\n", obj->value.double_);
+            break;
         case string:
             printf("str: %s\n", obj->value.str.value);
             break;
@@ -545,6 +612,8 @@ void print_object(Object *obj) {
                 if(i) printf(", ");
                 if(cur_array[i]->type == number) {
                     printf("%lld", cur_array[i]->value.number);
+                } else if(cur_array[i]->type == double_) {
+                    printf("%lf", cur_array[i]->value.double_);
                 } else {
                     printf("\"%s\"", cur_array[i]->value.str.value);
                 }

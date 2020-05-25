@@ -45,6 +45,9 @@ void run_node(Node *cur_node) {
         case numberNode:
             push(new_number(cur_node->node.number_node), false);
             break;
+        case doubleNode:
+            push(new_double(cur_node->node.double_node), false);
+            break;
         case identNode:
             run_ident_node(cur_node);
             break;
@@ -182,6 +185,9 @@ void run_array_node(Node *cur_node) {
             case strNode:
                 push_obj = new_str(cur_ptr->node->node.str_node);
                 break;
+            case doubleNode:
+                push_obj = new_double(cur_ptr->node->node.double_node);
+                break;
             default:
                 printf("unexpected type in array: %d\n", cur_type);
                 exit(1);
@@ -224,6 +230,7 @@ void run_unary_node(Node *cur_node) {
         case bit_not:
         case print:
         case len:
+        case toDouble:
             run_node(cur_node->node.unary_node->child);
             stack_unop(op);
             break;

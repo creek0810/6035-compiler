@@ -31,6 +31,9 @@ Node *new_node(void *cur_node, ASTType type) {
         case numberNode:
             result->node.number_node = *(long long*)cur_node;
             break;
+        case doubleNode:
+            result->node.double_node = *(double*)cur_node;
+            break;
         case arrayNode:
             result->node.array_node = cur_node;
             break;
@@ -125,6 +128,10 @@ Node *new_ident_node(char *name) {
 
 Node *new_number_node(long long number) {
     return new_node(&number, numberNode);
+}
+
+Node *new_double_node(double number) {
+    return new_node(&number, doubleNode);
 }
 
 Node *new_block_node() {

@@ -1,0 +1,37 @@
+name = [];
+score = [];
+
+num = int(input());
+
+/* read name and score */
+for(i=0; i<num; i=i+1) {
+    cur_line = input();
+
+    /* tokenize input */
+    buffer = "";
+    for(j=0; j<len(cur_line); j=j+1) {
+        if(cur_line[j] == " ") {
+            append(name, buffer);
+            buffer = "";
+        } else {
+            buffer = buffer + cur_line[j];
+        }
+    }
+    append(score, double(buffer));
+}
+
+/* bubble sort */
+for(i=0; i<len(score); i=i+1) {
+    for(j=0; j<len(score)-1-i; j=j+1) {
+        if(score[j] < score[j+1]) {
+            tmp = score[j];
+            score[j] = score[j+1];
+            score[j+1] = tmp;
+
+            tmp = name[j];
+            name[j] = name[j+1];
+            name[j+1] = tmp;
+        }
+    }
+}
+print(name[6]);

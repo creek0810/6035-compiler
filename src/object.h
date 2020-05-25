@@ -26,6 +26,7 @@ struct Array {
 
 union Value {
     long long number;
+    double double_;
     Str str;
     Array array;
 };
@@ -35,6 +36,7 @@ enum ObjectType  {
     number = 0,
     string = 1,
     array = 2,
+    double_ = 3,
 };
 
 struct Object {
@@ -47,6 +49,7 @@ struct Object {
 // construct function
 Object *new_array();
 Object *new_number(long long num);
+Object *new_double(double num);
 Object *new_str(char *str);
 
 // destruct function
@@ -81,6 +84,7 @@ Object *obj_bit_not(Object *a);
 Object *obj_len(Object *a);
 Object *obj_to_int(Object *a);
 Object *obj_to_str(Object *a);
+Object *obj_to_double(Object *a);
 Object *obj_assign(Object *a, Object *b);
 Object *obj_print(Object *a);
 void obj_array_assign(Object *arr, Object *idx, Object *value);

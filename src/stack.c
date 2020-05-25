@@ -118,6 +118,9 @@ void stack_unop(Operator op) {
     Object *tmp_value = tmp_node->value;
     Object *result = NULL;
     switch(op) {
+        case toDouble:
+            result = obj_to_double(tmp_value);
+            break;
         case toInt:
             result = obj_to_int(tmp_value);
             break;
