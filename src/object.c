@@ -86,8 +86,12 @@ void clear_obj(Object *a) {
         case string:
             free(a->value.str.value);
             break;
-        // TODO: support array
-        case array:
+        case array: {
+            for(int i=0; i<a->value.array.capacity; i++) {
+                free_obj(a->value.array.array[i]);
+            }
+            free(a->value.array.array);
+        }
             break;
     }
 }
