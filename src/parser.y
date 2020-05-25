@@ -231,10 +231,10 @@ postfix_expression: primary_expression { $$ = $1; }
                       $$ = new_binary_node($1, $3, getArray);
                   }
                   | PRINT L_PARA expression R_PARA {
-                      $$ = new_print_node($3);
+                      $$ = new_unary_node($3, print);
                   }
                   | LEN L_PARA expression R_PARA {
-                      $$ = new_len_node($3);
+                      $$ = new_unary_node($3, len);
                   }
                   | INPUT L_PARA R_PARA {
                       $$ = new_unary_node(NULL, input_);
@@ -338,6 +338,15 @@ void print_operator(int op) {
             break;
         case input_:
             printf("input\n");
+            break;
+        case toInt:
+            printf("to int\n");
+            break;
+        case print:
+            printf("print\n");
+            break;
+        case len:
+            printf("len\n");
             break;
         default:
             printf("undefined %d\n", op);
@@ -482,10 +491,6 @@ void print_node(Node *cur_node, int depth) {
             break;
         case appendNode:
             print_append_node(cur_node, depth);
-            break;
-        case printNode:
-            printf("%*sprint:\n", depth * 4 , " ");
-            print_node(cur_node->node.print_node, depth + 1);
             break;
         case arrayNode:
             print_array_node(cur_node, depth);

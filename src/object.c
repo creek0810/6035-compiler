@@ -127,15 +127,16 @@ void array_push(Object *a, Object *b) {
     }
 }
 
-Object *array_get(Object *a, int idx, bool is_reference) {
+Object *array_get(Object *a, Object *b) {
+    if(b->type != number) {
+        printf("idx type error(%d)\n", b->type);
+        exit(1);
+    }
 
+    int idx = b->value.number;
     switch(a->type) {
         case array:
-            if(is_reference) {
-                return a->value.array.array[idx];
-            } else {
-                return copy_obj(a->value.array.array[idx]);
-            }
+            return a->value.array.array[idx];
         case string: {
             char ch[2] = {0};
             ch[0] = a->value.str.value[idx];
@@ -442,10 +443,10 @@ bool obj_is_true(Object *a) {
     return true;
 }
 
-void obj_print(Object *a) {
+Object *obj_print(Object *a) {
     if(a == NULL) {
         printf("NULL\n");
-        return;
+        return NULL;
     }
 
     switch (a->type) {
@@ -472,6 +473,7 @@ void obj_print(Object *a) {
         default:
             printf("print unexpected type object: %d\n", a->type);
     }
+    return NULL;
 }
 
 Object *obj_assign(Object *a, Object *b) {

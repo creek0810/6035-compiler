@@ -57,7 +57,7 @@ Object *copy_obj(Object *a);
 
 // array function
 void array_push(Object *a, Object *b);
-Object *array_get(Object *a, int idx, bool is_reference);
+Object *array_get(Object *a, Object *b);
 
 // operation function
 Object *obj_add(Object *a, Object *b);
@@ -81,9 +81,9 @@ Object *obj_bit_not(Object *a);
 Object *obj_len(Object *a);
 Object *obj_to_int(Object *a);
 Object *obj_assign(Object *a, Object *b);
+Object *obj_print(Object *a);
 void obj_array_assign(Object *arr, Object *idx, Object *value);
 bool obj_is_true(Object *a);
-void obj_print(Object *a);
 
 /* debug function */
 void print_object(Object *a);

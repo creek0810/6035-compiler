@@ -22,12 +22,6 @@ Node *new_node(void *cur_node, ASTType type) {
         case blockNode:
             result->node.block_node = cur_node;
             break;
-        case printNode:
-            result->node.print_node = cur_node;
-            break;
-        case lenNode:
-            result->node.print_node = cur_node;
-            break;
         case strNode:
             result->node.str_node = strdup((char*)cur_node);
             break;

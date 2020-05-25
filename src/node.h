@@ -50,7 +50,10 @@ enum Operator {
     continue_ = 21,
     getArray = 22,
     input_ = 23,
+    /* unary */
     toInt = 24,
+    print = 25,
+    len = 26,
 };
 
 
@@ -123,8 +126,6 @@ union NodeExtend{
     char *str_node;
     char *ident_node;
     // built in function
-    Node *print_node;
-    Node *len_node;
     AppendNode *append_node;
 };
 
@@ -146,8 +147,6 @@ Node *new_for_node(Node *init, Node *stop, Node *after, Node *action);
 Node *new_block_node();
 Node *new_assign_node(Node *ident, Node *value);
 Node *new_ident_node(char *name);
-Node *new_print_node(Node *child);
-Node *new_len_node(Node *child);
 Node *new_array_node();
 Node *new_append_node(char *name, Node *value);
 
