@@ -122,7 +122,7 @@ union NodeExtend{
     AssignNode *assign_node;
     ArrayNode *array_node;
     // const and ident
-    int number_node;
+    long long number_node;
     char *str_node;
     char *ident_node;
     // built in function
@@ -141,7 +141,7 @@ struct Node {
 Node *new_binary_node(Node *lhs, Node *rhs, Operator op);
 Node *new_unary_node(Node *child, Operator op);
 Node *new_str_node(char *str);
-Node *new_number_node(int number);
+Node *new_number_node(long long number);
 Node *new_if_node(Node *condition, Node *true_action, Node *false_action);
 Node *new_for_node(Node *init, Node *stop, Node *after, Node *action);
 Node *new_block_node();

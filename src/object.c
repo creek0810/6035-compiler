@@ -7,7 +7,7 @@ Object *new_array() {
     return cur_obj;
 }
 
-Object *new_number(int num) {
+Object *new_number(long long num) {
     Object *cur_obj = calloc(1, sizeof(Object));
     cur_obj->type = number;
     cur_obj->value.number = num;
@@ -451,7 +451,7 @@ Object *obj_print(Object *a) {
 
     switch (a->type) {
         case number:
-            printf("%d\n", a->value.number);
+            printf("%lld\n", a->value.number);
             break;
         case string:
             printf("%s\n", a->value.str.value);
@@ -462,7 +462,7 @@ Object *obj_print(Object *a) {
             for(int i=0; i<a->value.array.capacity; i++) {
                 if(i) printf(", ");
                 if(cur_array[i]->type == number) {
-                    printf("%d", cur_array[i]->value.number);
+                    printf("%lld", cur_array[i]->value.number);
                 } else {
                     printf("\"%s\"", cur_array[i]->value.str.value);
                 }
@@ -519,7 +519,7 @@ void obj_array_assign(Object *arr, Object *idx, Object *value) {
 void print_object(Object *obj) {
     switch (obj->type) {
         case number:
-            printf("number: %d\n", obj->value.number);
+            printf("number: %lld\n", obj->value.number);
             break;
         case string:
             printf("str: %s\n", obj->value.str.value);
@@ -531,7 +531,7 @@ void print_object(Object *obj) {
             for(int i=0; i<obj->value.array.capacity; i++) {
                 if(i) printf(", ");
                 if(cur_array[i]->type == number) {
-                    printf("%d", cur_array[i]->value.number);
+                    printf("%lld", cur_array[i]->value.number);
                 } else {
                     printf("\"%s\"", cur_array[i]->value.str.value);
                 }

@@ -25,7 +25,7 @@ struct Array {
 };
 
 union Value {
-    int number;
+    long long number;
     Str str;
     Array array;
 };
@@ -46,7 +46,7 @@ struct Object {
 
 // construct function
 Object *new_array();
-Object *new_number(int num);
+Object *new_number(long long num);
 Object *new_str(char *str);
 
 // destruct function

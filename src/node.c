@@ -29,7 +29,7 @@ Node *new_node(void *cur_node, ASTType type) {
             result->node.ident_node = strdup((char*)cur_node);
             break;
         case numberNode:
-            result->node.number_node = *(int*)cur_node;
+            result->node.number_node = *(long long*)cur_node;
             break;
         case arrayNode:
             result->node.array_node = cur_node;
@@ -123,7 +123,7 @@ Node *new_ident_node(char *name) {
     return new_node(name, identNode);
 }
 
-Node *new_number_node(int number) {
+Node *new_number_node(long long number) {
     return new_node(&number, numberNode);
 }
 

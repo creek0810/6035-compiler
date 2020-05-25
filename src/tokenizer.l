@@ -1,5 +1,6 @@
 %{
     #include <stdio.h>
+    #include <stdlib.h>
     #include "node.h"
     #include "parser.h"
 
@@ -39,7 +40,11 @@ STR \"{CHARACTER}*\"
 "int"                       { return INT; }
 
     /* const */
-{DEC_CONST}                 { yylval.num = atoi(yytext); return NUMBER; }
+{DEC_CONST}                 {
+    char *tmp;
+    yylval.num = strtoll(yytext, &tmp, 0);
+    return NUMBER;
+}
 {STR}                       { yylval.str = clean_str(yytext); return STR; }
 
     /* ident */

@@ -13,7 +13,7 @@ void yyerror(const char* msg) {
 %union {
     char ch;
     char *str;
-    int num;
+    long long int num;
     Node *node;
 }
 
@@ -472,7 +472,7 @@ void print_node(Node *cur_node, int depth) {
             printf("%*s%s\n", depth * 4 , " ", cur_node->node.str_node);
             break;
         case numberNode:
-            printf("%*s%d\n", depth * 4 , " ", cur_node->node.number_node);
+            printf("%*s%lld\n", depth * 4 , " ", cur_node->node.number_node);
             break;
         case identNode:
             printf("%*sident: %s\n", depth * 4 , " ", cur_node->node.ident_node);
