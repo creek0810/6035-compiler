@@ -1,0 +1,46 @@
+a = input();
+b = input();
+array1 = [];
+
+buffer = "";
+// tokenize a
+for(i=0 ;i<len(a); i=i+1) {
+    if(a[i] == ",") {
+        append(array1, int(buffer));
+        buffer = "";
+    } else {
+        buffer = buffer + a[i];
+    }
+}
+append(array1, int(buffer));
+// tokenize b
+buffer = "";
+for(i=0 ;i<len(b); i=i+1) {
+    if(b[i] == ",") {
+        append(array1, int(buffer));
+        buffer = "";
+    } else {
+        buffer = buffer + b[i];
+    }
+}
+append(array1, int(buffer));
+
+// bubble sort
+for(i=0; i<len(array1); i=i+1) {
+    for(j=0; j<len(array1)-1-i; j=j+1) {
+        if(array1[j] > array1[j+1]) {
+            tmp = array1[j];
+            array1[j] = array1[j+1];
+            array1[j+1] = tmp;
+        }
+    }
+}
+
+result = "";
+for(i=0; i<len(array1); i=i+1) {
+    if(i!=0) {
+        result = result + ",";
+    }
+    result = result + str(array1[i]);
+}
+print(result);

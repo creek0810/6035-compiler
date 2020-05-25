@@ -80,6 +80,7 @@ Object *obj_not(Object *a);
 Object *obj_bit_not(Object *a);
 Object *obj_len(Object *a);
 Object *obj_to_int(Object *a);
+Object *obj_to_str(Object *a);
 Object *obj_assign(Object *a, Object *b);
 Object *obj_print(Object *a);
 void obj_array_assign(Object *arr, Object *idx, Object *value);

@@ -428,12 +428,25 @@ Object *obj_to_int(Object *a) {
             printf("array can't be convert to int");
             return NULL;
         case string: {
-            int result = 0;
-            for(int i=0; i<a->value.str.length; i++) {
-                result = result * 10 + (a->value.str.value[i] - '0');
-            }
+            char *tmp;
+            long long result = result = strtoll(a->value.str.value, &tmp, 0);
             return new_number(result);
         }
+    }
+}
+
+Object *obj_to_str(Object *a) {
+    switch(a->type) {
+        case number: {
+            char tmp[30] = {0};
+            sprintf(tmp, "%lld", a->value.number);
+            return new_str(tmp);
+        }
+        case array:
+            printf("array can't be convert to str");
+            return NULL;
+        case string:
+            return a;
     }
 }
 

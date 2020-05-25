@@ -204,8 +204,8 @@ void run_unary_node(Node *cur_node) {
     switch(op) {
         // input
         case input_: {
-            char buffer[1024] = {0};
-            fgets(buffer, 1024, stdin);
+            char buffer[2048] = {0};
+            fgets(buffer, 2048, stdin);
             // handle new line
             buffer[strcspn(buffer, "\r\n")] = 0;
             push(new_str(buffer), false);
@@ -219,6 +219,7 @@ void run_unary_node(Node *cur_node) {
             JUMP_STMT = BREAK_FLAG;
             break;
         case toInt:
+        case toStr:
         case not:
         case bit_not:
         case print:

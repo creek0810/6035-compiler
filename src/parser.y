@@ -20,12 +20,12 @@ void yyerror(const char* msg) {
 // keyword token
 %token IF ELSE FOR CONTINUE BREAK
 // built in function
-%token PRINT APPEND LEN INPUT INT
+%token PRINT APPEND LEN INPUT INT STR
 // punc token
 %token SHL SHR LE GE EQ NE LOGIC_AND LOGIC_OR SEMI L_CURLY R_CURLY L_PARA R_PARA L_BRACKET R_BRACKET OR AND XOR ADD SUB MUL DIV MOD LT GT TILDE EXCLAM COMMA ASSIGN
 // const token
 %token <num> NUMBER
-%token <str> STR
+%token <str> STRING
 // ident
 %token <str> IDENT
 
@@ -242,6 +242,9 @@ postfix_expression: primary_expression { $$ = $1; }
                   | INT L_PARA expression R_PARA {
                       $$ = new_unary_node($3, toInt);
                   }
+                  | STR L_PARA expression R_PARA {
+                      $$ = new_unary_node($3, toStr);
+                  }
                   | APPEND L_PARA IDENT COMMA expression R_PARA {
                       $$ = new_append_node($3, $5);
                   }
@@ -250,14 +253,14 @@ postfix_expression: primary_expression { $$ = $1; }
 primary_expression: IDENT { $$ = new_ident_node($1); }
                   | NUMBER { $$ = new_number_node($1); }
                   | L_PARA expression R_PARA { $$ = $2; }
-                  | STR { $$ = new_str_node($1); }
+                  | STRING { $$ = new_str_node($1); }
                   | L_BRACKET array R_BRACKET { $$ = $2; }
                   ;
 
 array: { $$ = new_array_node(); }
-     | STR  { $$ = new_array_node(); push_array_node($$, new_str_node($1)); }
+     | STRING  { $$ = new_array_node(); push_array_node($$, new_str_node($1)); }
      | NUMBER { $$ = new_array_node(); push_array_node($$, new_number_node($1)); }
-     | array COMMA STR { push_array_node($$, new_str_node($3)); }
+     | array COMMA STRING { push_array_node($$, new_str_node($3)); }
      | array COMMA NUMBER { push_array_node($$, new_number_node($3)); }
      ;
 

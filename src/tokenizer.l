@@ -38,6 +38,7 @@ STR \"{CHARACTER}*\"
 "append"                    { return APPEND; }
 "input"                     { return INPUT; }
 "int"                       { return INT; }
+"str"                       { return STR; }
 
     /* const */
 {DEC_CONST}                 {
@@ -45,7 +46,7 @@ STR \"{CHARACTER}*\"
     yylval.num = strtoll(yytext, &tmp, 0);
     return NUMBER;
 }
-{STR}                       { yylval.str = clean_str(yytext); return STR; }
+{STR}                       { yylval.str = clean_str(yytext); return STRING; }
 
     /* ident */
 {ID}                        { yylval.str = strdup(yytext); return IDENT; }

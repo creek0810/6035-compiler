@@ -54,6 +54,7 @@ enum Operator {
     toInt = 24,
     print = 25,
     len = 26,
+    toStr = 27,
 };
 
 

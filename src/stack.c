@@ -121,6 +121,9 @@ void stack_unop(Operator op) {
         case toInt:
             result = obj_to_int(tmp_value);
             break;
+        case toStr:
+            result = obj_to_str(tmp_value);
+            break;
         case not:
             result = obj_not(tmp_value);
             break;
