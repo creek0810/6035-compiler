@@ -16,8 +16,10 @@ tokenizer.h tokenizer.c: tokenizer.l
 parser.h parser.c: parser.y
 	bison -d -o parser.c parser.y
 
-.PHONY: clean test
-test:
-	bash test.sh
+.PHONY: clean test test-final
 clean:
 	rm *.o parser.h parser.c tokenizer.h tokenizer.c result.out tmp.out
+test:
+	bash test.sh
+test-final:
+	bash testFinal.sh

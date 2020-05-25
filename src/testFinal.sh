@@ -28,7 +28,6 @@ test() {
     fi
 }
 
-# tokenizer test
 test "../tests/final/testCase/pa" "../tests/final/program/a"
 test "../tests/final/testCase/pb" "../tests/final/program/b"
 test "../tests/final/testCase/pc" "../tests/final/program/c"
