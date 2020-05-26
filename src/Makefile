@@ -1,8 +1,7 @@
 OBJS = cli.o parser.o tokenizer.o symbolTable.o node.o interpreter.o object.o stack.o
-CFLAGS = -g
 
 cli: $(OBJS) cli.h
-	cc -g -o cli $(OBJS)
+	cc -o cli $(OBJS)
 
 object.o: object.h
 
