@@ -44,8 +44,15 @@ The comment style is same as c.
 ### Assign and declare
 This part is same as python.
 ```
+// integer
 a = 10;
-b = "123";
+// double
+b = 10.5;
+// string
+c = "123";
+// array
+d = [1, "123", 4.3];
+
 ```
 
 ### For

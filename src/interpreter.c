@@ -30,6 +30,7 @@ void run(char *file_name) {
 void run_node(Node *cur_node) {
 
     if(cur_node == NULL) return;
+    if(JUMP_STMT != 0) return;
 
     ASTType cur_type = cur_node->type;
     switch(cur_type) {
@@ -161,12 +162,13 @@ void run_for_node(Node *cur_node) {
         if(JUMP_STMT == BREAK_FLAG) {
             JUMP_STMT = 0;
             break;
-        } else if(JUMP_STMT == CONTINUE_FLAG) {
-            JUMP_STMT = 0;
+        } else {
+            if(JUMP_STMT == CONTINUE_FLAG) {
+                JUMP_STMT = 0;
+            }
+            run_node(cur_node->node.for_node->after);
+            run_node(cur_node->node.for_node->stop);
         }
-        run_node(cur_node->node.for_node->after);
-
-        run_node(cur_node->node.for_node->stop);
     }
     pop_symbol_table();
     return;

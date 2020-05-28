@@ -521,6 +521,9 @@ Object *obj_print(Object *a) {
         case string:
             printf("%s\n", a->value.str.value);
             break;
+        case double_:
+            printf("%lf\n", a->value.double_);
+            break;
         case array: {
             printf("[");
             Object **cur_array = a->value.array.array;

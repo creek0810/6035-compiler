@@ -1,7 +1,7 @@
 #ifndef _INTERPRETER_H
 #define _INTERPRETER_H
 
-#define CONTINUE_FLAG 1
+#define CONTINUE_FLAG 2
 #define BREAK_FLAG 1
 
 #include <stdio.h>

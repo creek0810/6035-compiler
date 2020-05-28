@@ -44,6 +44,7 @@ void free_symbol(Symbol *cur_node) {
     */
     free(cur_node->name);
     switch(cur_node->value->type) {
+        case double_:
         case number:
         case string:
             free_obj(cur_node->value);
