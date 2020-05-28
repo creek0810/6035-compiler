@@ -125,7 +125,7 @@ void print_token(char *file_name) {
             printf("ident: %s\n", yytext);
         } else if(token == NUMBER) {
             printf("number: %s\n", yytext);
-        } else if(token >= IF && token <= APPEND) {
+        } else if(token >= IF && token <= KW_DOUBLE) {
             printf("keyword: %s\n", yytext);
         } else if(token >= SHL && token <= ASSIGN) {
             printf("punc: %s\n", yytext);
