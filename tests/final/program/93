@@ -1,0 +1,15 @@
+a = input();
+last_ch = a[0];
+acc = 1;
+result = "";
+for(i=1; i<len(a); i=i+1) {
+    if(a[i] == a[i-1]) {
+        acc = acc + 1;
+    } else {
+       result = result + str(acc) + last_ch;
+       acc = 1;
+       last_ch = a[i];
+    }
+}
+result = result + str(acc) + last_ch;
+print(result);
