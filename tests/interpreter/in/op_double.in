@@ -1,0 +1,103 @@
+a = 10.5;
+b = -10.5;
+zero = 0;
+one = 1;
+
+// <=
+tmp = a <= 10.4;
+print(tmp);
+tmp = a <= 10.5;
+print(tmp);
+tmp = a <= 10.6;
+print(tmp);
+
+// >=
+tmp = a >= 10.4;
+print(tmp);
+tmp = a >= 10.5;
+print(tmp);
+tmp = a >= 10.6;
+print(tmp);
+
+// >
+tmp = a > 10.4;
+print(tmp);
+tmp = a > 10.5;
+print(tmp);
+tmp = a > 10.6;
+print(tmp);
+
+// <
+tmp = a < 10.4;
+print(tmp);
+tmp = a < 10.5;
+print(tmp);
+tmp = a < 10.6;
+print(tmp);
+
+// ==
+tmp = a == 10.5;
+print(tmp);
+tmp = a == 10.6;
+print(tmp);
+
+
+// !=
+tmp = a != 10.5;
+print(tmp);
+tmp = a != 11.6;
+print(tmp);
+
+// +
+tmp = a + 0.1;
+print(tmp);
+tmp = a + (-0.1);
+print(tmp);
+tmp = b + 0.1;
+print(tmp);
+tmp = b + (-0.1);
+print(tmp);
+
+// -
+tmp = a - 0.1;
+print(tmp);
+tmp = a - (-0.1);
+print(tmp);
+tmp = b - 0.1;
+print(tmp);
+tmp = b - (-0.1);
+print(tmp);
+
+// *
+tmp = a * 0.1;
+print(tmp);
+tmp = a * (-0.1);
+print(tmp);
+tmp = b * 0.1;
+print(tmp);
+tmp = b * (-0.1);
+print(tmp);
+
+// !
+tmp = !10.5;
+print(tmp);
+tmp = !0.0;
+print(tmp);
+
+// &&
+tmp = a && zero;
+print(tmp);
+tmp = a && one;
+print(tmp);
+
+// ||
+tmp = a || zero;
+print(tmp);
+tmp = a || one;
+print(tmp);
+
+// /
+tmp = a / 2.0;
+print(tmp);
+tmp = b / 2.0;
+print(tmp);

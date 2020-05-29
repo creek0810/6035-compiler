@@ -1,0 +1,37 @@
+a = "hello";
+
+// index
+print(a[0]);
+print(a[len(a) - 1]);
+
+// ==
+tmp = a == "hello";
+print(tmp);
+tmp = a == "world";
+print(tmp);
+
+// !=
+tmp = a != "hello";
+print(tmp);
+tmp = a != "world";
+print(tmp);
+
+// +
+tmp = a + " world!";
+print(tmp);
+
+// !
+tmp = !a;
+print(tmp);
+
+// &&
+tmp = a && 0;
+print(tmp);
+tmp = a && 1;
+print(tmp);
+
+// ||
+tmp = a || 0;
+print(tmp);
+tmp = a || 1;
+print(tmp);

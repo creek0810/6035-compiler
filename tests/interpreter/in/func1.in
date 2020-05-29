@@ -1,0 +1,23 @@
+/* test type convert function */
+
+/* declare */
+int_num = 10;
+str_ = "123";
+double_num = 11.5;
+
+/* start test */
+tmp = str(int_num);
+print(tmp);
+tmp = double(int_num);
+print(tmp);
+
+tmp = int(str_);
+print(tmp);
+tmp = double(str_);
+print(tmp);
+
+tmp = int(double_num);
+print(tmp);
+tmp = str(double_num);
+print(tmp);
+
