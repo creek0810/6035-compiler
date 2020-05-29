@@ -80,6 +80,7 @@ Object *obj_ne(Object *a, Object *b);
 Object *obj_lt(Object *a, Object *b); // lt, gt
 Object *obj_le(Object *a, Object *b); // le, ge
 Object *obj_not(Object *a);
+Object *obj_neg(Object *a);
 Object *obj_bit_not(Object *a);
 Object *obj_len(Object *a);
 Object *obj_to_int(Object *a);

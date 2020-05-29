@@ -226,6 +226,11 @@ void run_unary_node(Node *cur_node) {
         case break_:
             JUMP_STMT = BREAK_FLAG;
             break;
+        // another
+        case add:
+            run_node(cur_node->node.unary_node->child);
+            break;
+        case sub:
         case toInt:
         case toStr:
         case not:

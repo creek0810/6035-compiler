@@ -139,6 +139,9 @@ void stack_unop(Operator op) {
         case print:
             result = obj_print(tmp_value);
             break;
+        case sub:
+            result = obj_neg(tmp_value);
+            break;
         default:
             printf("Unexpected unnary node: %d\n", op);
             return;

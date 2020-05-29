@@ -164,7 +164,6 @@ Object *array_get(Object *a, Object *b) {
 
 /* operation function */
 Object *obj_add(Object *a, Object *b) {
-
     if(!is_same_type(a, b)) {
         print_op_error("+", a, b);
         return NULL;
@@ -246,6 +245,8 @@ Object *obj_div(Object *a, Object *b) {
     switch(a->type) {
         case number:
             return new_number(a->value.number / b->value.number);
+        case double_:
+            return new_double(a->value.double_ / b->value.double_);
         default:
             print_op_error("/", a, b);
             return NULL;
@@ -432,6 +433,20 @@ Object *obj_bit_not(Object *a) {
             return new_number(~(a->value.number));
         default:
             print_op_error("~", a, NULL);
+            return NULL;
+    }
+}
+
+Object *obj_neg(Object *a) {
+    switch(a->type) {
+        case number:
+            return new_number(a->value.number * -1);
+        case double_:
+            return new_double(a->value.double_ * -1);
+        default:
+            printf("TypeError: unsupported operand type(s) for %s: ", "-");
+            print_type(a);
+            printf("\n");
             return NULL;
     }
 }
