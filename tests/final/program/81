@@ -1,0 +1,27 @@
+cur_str = input();
+
+// tokenize input
+buffer = "";
+number = [];
+for(i=0; i<len(cur_str); i=i+1) {
+    if(cur_str[i] == " ") {
+        append(number, int(buffer));
+        buffer = "";
+    } else {
+        buffer = buffer + cur_str[i];
+    }
+}
+append(number, int(buffer));
+// bubble sort
+for(i=0; i<len(number); i=i+1) {
+    for(j=0; j<len(number)-1-i; j=j+1) {
+        if(number[j] > number[j+1]) {
+            tmp = number[j];
+            number[j] = number[j+1];
+            number[j+1] = tmp;
+        }
+    }
+}
+max = number[len(number) - 1];
+
+print(max - number[0]);
