@@ -1,14 +1,21 @@
 # Creepiler
-A interpreter for mixing of python and c.
+An interpreter for mixing of python and c.
 
 ## Build
 
+### Windows
+```
+cd src
+make.bat
+```
+
+### macOS
 ```
 cd src
 make
 ```
 
-## Test
+## Test(only for macOS)
 Test basic tokenizer, parser and interpreter behavior.
 ```
 cd src
@@ -83,3 +90,14 @@ a = input(); // read input
 append(a, 123) // append 123 into list a
 ```
 
+### Variable lifetime and scope
+Same as c.
+```
+a = 0;
+for(i=0; i<10; i=i+1) {
+    a = a + 1;
+    c = 10;
+}
+print(a); // 10
+print(c); // error
+```
