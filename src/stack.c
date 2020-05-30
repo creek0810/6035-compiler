@@ -73,10 +73,10 @@ void stack_biop(Operator op) {
         case xor:
             result = obj_xor(left_value, right_value);
             break;
-        case logic_or:
+        case logicOr:
             result = obj_logic_or(left_value, right_value);
             break;
-        case logic_and:
+        case logicAnd:
             result = obj_logic_and(left_value, right_value);
             break;
         case shl:
@@ -130,7 +130,7 @@ void stack_unop(Operator op) {
         case not:
             result = obj_not(tmp_value);
             break;
-        case bit_not:
+        case bitNot:
             result = obj_bit_not(tmp_value);
             break;
         case len:

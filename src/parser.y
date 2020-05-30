@@ -130,13 +130,13 @@ expression: logical_or_expression { $$ = $1; }
 
 logical_or_expression: logical_and_expression { $$ = $1; }
                      | logical_or_expression LOGIC_OR logical_and_expression {
-                         $$ = new_binary_node($1, $3, logic_or);
+                         $$ = new_binary_node($1, $3, logicOr);
                      }
                      ;
 
 logical_and_expression: inclusive_or_expression { $$ = $1; }
                       | logical_and_expression LOGIC_AND inclusive_or_expression {
-                         $$ = new_binary_node($1, $3, logic_and);
+                         $$ = new_binary_node($1, $3, logicAnd);
                       }
                       ;
 
@@ -220,7 +220,7 @@ unary_expression: postfix_expression { $$ = $1; }
                     $$ = new_unary_node($2, sub);
                 }
                 | TILDE unary_expression {
-                    $$ = new_unary_node($2, bit_not);
+                    $$ = new_unary_node($2, bitNot);
                 }
                 | EXCLAM unary_expression {
                     $$ = new_unary_node($2, not);
@@ -277,70 +277,70 @@ void print_node(Node *cur_node, int depth);
 
 void print_operator(int op) {
     switch(op) {
-        case 0:
+        case add:
             printf("add\n");
             break;
-        case 1:
+        case sub:
             printf("sub\n");
             break;
-        case 2:
+        case mod:
             printf("mod\n");
             break;
-        case 3:
+        case div_:
             printf("div_\n");
             break;
-        case 4:
+        case and:
             printf("and\n");
             break;
-        case 5:
+        case or:
             printf("or\n");
             break;
-        case 6:
+        case xor:
             printf("xor\n");
             break;
-        case 7:
-            printf("logic_or\n");
+        case logicOr:
+            printf("logicOr\n");
             break;
-        case 8:
-            printf("logic_and\n");
+        case logicAnd:
+            printf("logicAnd\n");
             break;
-        case 9:
+        case shl:
             printf("shl\n");
             break;
-        case 10:
+        case shr:
             printf("shr\n");
             break;
-        case 11:
+        case eq:
             printf("eq\n");
             break;
-        case 12:
+        case ne:
             printf("ne\n");
             break;
-        case 13:
+        case lt:
             printf("lt\n");
             break;
-        case 14:
+        case gt:
             printf("gt\n");
             break;
-        case 15:
+        case le:
             printf("le\n");
             break;
-        case 16:
+        case ge:
             printf("ge\n");
             break;
-        case 17:
+        case not:
             printf("not\n");
             break;
-        case 18:
-            printf("bit_not\n");
+        case bitNot:
+            printf("bitNot\n");
             break;
-        case 19:
+        case mul:
             printf("mul\n");
             break;
-        case 20:
+        case break_:
             printf("break\n");
             break;
-        case 21:
+        case continue_:
             printf("continue\n");
             break;
         case getArray:
@@ -349,14 +349,21 @@ void print_operator(int op) {
         case input_:
             printf("input\n");
             break;
-        case toInt:
-            printf("to int\n");
-            break;
         case print:
             printf("print\n");
             break;
         case len:
             printf("len\n");
+            break;
+        /* type convert */
+        case toInt:
+            printf("toInt\n");
+            break;
+        case toDouble:
+            printf("toDouble\n");
+            break;
+        case toStr:
+            printf("toStr\n");
             break;
         default:
             printf("undefined %d\n", op);
@@ -478,12 +485,6 @@ void print_node(Node *cur_node, int depth) {
         case unaryNode:
             print_unary_node(cur_node, depth);
             break;
-        case strNode:
-            printf("%*s%s\n", depth * 4 , " ", cur_node->node.str_node);
-            break;
-        case numberNode:
-            printf("%*s%lld\n", depth * 4 , " ", cur_node->node.number_node);
-            break;
         case identNode:
             printf("%*sident: %s\n", depth * 4 , " ", cur_node->node.ident_node);
             break;
@@ -504,6 +505,16 @@ void print_node(Node *cur_node, int depth) {
             break;
         case arrayNode:
             print_array_node(cur_node, depth);
+            break;
+        // const node
+        case strNode:
+            printf("%*sstring:%s\n", depth * 4 , " ", cur_node->node.str_node);
+            break;
+        case numberNode:
+            printf("%*snumber: %lld\n", depth * 4 , " ", cur_node->node.number_node);
+            break;
+        case doubleNode:
+            printf("%*sdouble: %lf\n", depth * 4 , " ", cur_node->node.double_node);
             break;
         default:
             printf("unexpected node type: %d\n", cur_node->type);

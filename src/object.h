@@ -33,10 +33,10 @@ union Value {
 
 /* define object */
 enum ObjectType  {
-    number = 0,
-    string = 1,
-    array = 2,
-    double_ = 3,
+    number,
+    string,
+    array,
+    double_,
 };
 
 struct Object {

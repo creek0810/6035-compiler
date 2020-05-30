@@ -110,14 +110,6 @@ Node *new_for_node(Node *init, Node *stop, Node *after, Node *action) {
     return new_node(cur_node, forNode);
 }
 
-Node *new_print_node(Node *child) {
-    return new_node(child, printNode);
-}
-
-Node *new_len_node(Node *child) {
-    return new_node(child, lenNode);
-}
-
 Node *new_str_node(char *str) {
     return new_node(str, strNode);
 }

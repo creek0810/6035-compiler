@@ -234,7 +234,7 @@ void run_unary_node(Node *cur_node) {
         case toInt:
         case toStr:
         case not:
-        case bit_not:
+        case bitNot:
         case print:
         case len:
         case toDouble:
