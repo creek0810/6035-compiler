@@ -1,0 +1,56 @@
+ block node:
+    assign node:
+        ident:
+            ident: a
+        value:
+            array node:
+                number: 1
+                number: 2
+                number: 3
+    unary node:
+        operator: print
+        child: 
+            ident: a
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            unary node:
+                operator: len
+                child: 
+                    ident: a
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            unary node:
+                operator: toStr
+                child: 
+                    ident: a
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            unary node:
+                operator: toInt
+                child: 
+                    ident: a
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            unary node:
+                operator: toDouble
+                child: 
+                    ident: a
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            unary node:
+                operator: input
+                child: 
+    append node:
+        name: a
+        value:
+            number: 123

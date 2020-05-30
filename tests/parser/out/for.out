@@ -1,0 +1,151 @@
+ block node:
+    assign node:
+        ident:
+            ident: number
+        value:
+            array node:
+                number: 5
+                number: 16
+                number: 6
+                number: 18
+    for node:
+        init: 
+            assign node:
+                ident:
+                    ident: i
+                value:
+                    number: 0
+        stop: 
+            binary node:
+                operator: lt
+                lhs: 
+                    ident: i
+                rhs: 
+                    unary node:
+                        operator: len
+                        child: 
+                            ident: number
+        after: 
+            assign node:
+                ident:
+                    ident: i
+                value:
+                    binary node:
+                        operator: add
+                        lhs: 
+                            ident: i
+                        rhs: 
+                            number: 1
+        action: 
+            block node:
+                for node:
+                    init: 
+                        assign node:
+                            ident:
+                                ident: j
+                            value:
+                                number: 0
+                    stop: 
+                        binary node:
+                            operator: lt
+                            lhs: 
+                                ident: j
+                            rhs: 
+                                binary node:
+                                    operator: sub
+                                    lhs: 
+                                        binary node:
+                                            operator: sub
+                                            lhs: 
+                                                unary node:
+                                                    operator: len
+                                                    child: 
+                                                        ident: number
+                                            rhs: 
+                                                number: 1
+                                    rhs: 
+                                        ident: i
+                    after: 
+                        assign node:
+                            ident:
+                                ident: j
+                            value:
+                                binary node:
+                                    operator: add
+                                    lhs: 
+                                        ident: j
+                                    rhs: 
+                                        number: 1
+                    action: 
+                        block node:
+                            if node:
+                                condition: 
+                                    binary node:
+                                        operator: gt
+                                        lhs: 
+                                            binary node:
+                                                operator: getArray
+                                                lhs: 
+                                                    ident: number
+                                                rhs: 
+                                                    ident: j
+                                        rhs: 
+                                            binary node:
+                                                operator: getArray
+                                                lhs: 
+                                                    ident: number
+                                                rhs: 
+                                                    binary node:
+                                                        operator: add
+                                                        lhs: 
+                                                            ident: j
+                                                        rhs: 
+                                                            number: 1
+                                true: 
+                                    block node:
+                                        assign node:
+                                            ident:
+                                                ident: tmp
+                                            value:
+                                                binary node:
+                                                    operator: getArray
+                                                    lhs: 
+                                                        ident: number
+                                                    rhs: 
+                                                        ident: j
+                                        assign node:
+                                            ident:
+                                                binary node:
+                                                    operator: getArray
+                                                    lhs: 
+                                                        ident: number
+                                                    rhs: 
+                                                        ident: j
+                                            value:
+                                                binary node:
+                                                    operator: getArray
+                                                    lhs: 
+                                                        ident: number
+                                                    rhs: 
+                                                        binary node:
+                                                            operator: add
+                                                            lhs: 
+                                                                ident: j
+                                                            rhs: 
+                                                                number: 1
+                                        assign node:
+                                            ident:
+                                                binary node:
+                                                    operator: getArray
+                                                    lhs: 
+                                                        ident: number
+                                                    rhs: 
+                                                        binary node:
+                                                            operator: add
+                                                            lhs: 
+                                                                ident: j
+                                                            rhs: 
+                                                                number: 1
+                                            value:
+                                                ident: tmp
+                                false: 

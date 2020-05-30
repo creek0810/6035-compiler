@@ -2,8 +2,9 @@
 
 # define test function
 test() {
-    folder_path=$1
+    test_type=$1
     cli_arg=$2
+    folder_path="../tests/$test_type"
 
     flag=0
     for file_name in `ls $folder_path/in`
@@ -23,14 +24,15 @@ test() {
     done
 
     if [ $flag == 0 ]; then
-        echo "all test case passed"
+        echo "$test_type test passed"
     fi
 }
 
 # tokenizer test
-test "../tests/tokenizer" "-t"
+test "tokenizer" "-t"
 
 # parser test
+test "parser" "-p"
 
 # interpreter test
-test "../tests/interpreter" " "
+test "interpreter" " "

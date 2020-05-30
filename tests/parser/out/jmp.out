@@ -1,0 +1,71 @@
+ block node:
+    assign node:
+        ident:
+            ident: a
+        value:
+            number: 0
+    for node:
+        init: 
+            assign node:
+                ident:
+                    ident: i
+                value:
+                    number: 0
+        stop: 
+            binary node:
+                operator: lt
+                lhs: 
+                    ident: i
+                rhs: 
+                    number: 10
+        after: 
+            assign node:
+                ident:
+                    ident: i
+                value:
+                    binary node:
+                        operator: add
+                        lhs: 
+                            ident: i
+                        rhs: 
+                            number: 1
+        action: 
+            block node:
+                if node:
+                    condition: 
+                        binary node:
+                            operator: eq
+                            lhs: 
+                                ident: i
+                            rhs: 
+                                number: 5
+                    true: 
+                        block node:
+                            unary node:
+                                operator: continue
+                                child: 
+                    false: 
+                if node:
+                    condition: 
+                        binary node:
+                            operator: eq
+                            lhs: 
+                                ident: i
+                            rhs: 
+                                number: 7
+                    true: 
+                        block node:
+                            unary node:
+                                operator: break
+                                child: 
+                    false: 
+                assign node:
+                    ident:
+                        ident: a
+                    value:
+                        binary node:
+                            operator: add
+                            lhs: 
+                                ident: a
+                            rhs: 
+                                ident: i

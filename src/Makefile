@@ -19,6 +19,6 @@ parser.h parser.c: parser.y
 clean:
 	rm *.o parser.h parser.c tokenizer.h tokenizer.c result.out tmp.out
 test:
-	bash test.sh
+	@bash test.sh
 test-final:
-	bash testFinal.sh
+	@bash testFinal.sh

@@ -1,0 +1,9 @@
+/* test built-in function */
+a = [1, 2, 3];
+print(a);
+tmp = len(a);
+tmp = str(a);
+tmp = int(a);
+tmp = double(a);
+tmp = input();
+append(a, 123);

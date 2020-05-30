@@ -1,0 +1,230 @@
+ block node:
+    assign node:
+        ident:
+            ident: a
+        value:
+            array node:
+                number: 1
+                number: 2
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: add
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: sub
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: mul
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: mod
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: div_
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: and
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: or
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: xor
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: logicAnd
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: logicOr
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: shl
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: shr
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: eq
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: ne
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: lt
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 2
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: gt
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 2
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: le
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 2
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: ge
+                lhs: 
+                    number: 1
+                rhs: 
+                    number: 2
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            binary node:
+                operator: getArray
+                lhs: 
+                    ident: a
+                rhs: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            unary node:
+                operator: add
+                child: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            unary node:
+                operator: sub
+                child: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            unary node:
+                operator: not
+                child: 
+                    number: 1
+    assign node:
+        ident:
+            ident: tmp
+        value:
+            unary node:
+                operator: bitNot
+                child: 
+                    number: 1

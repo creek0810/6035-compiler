@@ -2,8 +2,9 @@
 
 # define test function
 test() {
-    folder_path=$1
+    problem_name=$1
     program_path=$2
+    folder_path="../tests/final/testCase/$problem_name"
 
     flag=0
     for file_name in `ls $folder_path/in`
@@ -24,19 +25,19 @@ test() {
     done
 
     if [ $flag == 0 ]; then
-        echo "all test case passed"
+        echo "problem $problem_name passed"
     fi
 }
 
-test "../tests/final/testCase/pa" "../tests/final/program/a"
-test "../tests/final/testCase/pb" "../tests/final/program/b"
-test "../tests/final/testCase/pc" "../tests/final/program/c"
-test "../tests/final/testCase/pd" "../tests/final/program/d"
-test "../tests/final/testCase/pe" "../tests/final/program/e"
-test "../tests/final/testCase/pf" "../tests/final/program/f"
-test "../tests/final/testCase/pg" "../tests/final/program/g"
-test "../tests/final/testCase/ph" "../tests/final/program/h"
-test "../tests/final/testCase/pi" "../tests/final/program/i"
-test "../tests/final/testCase/pj" "../tests/final/program/j"
-test "../tests/final/testCase/p93" "../tests/final/program/93"
-test "../tests/final/testCase/p81" "../tests/final/program/81"
+test "pa" "../tests/final/program/a"
+test "pb" "../tests/final/program/b"
+test "pc" "../tests/final/program/c"
+test "pd" "../tests/final/program/d"
+test "pe" "../tests/final/program/e"
+test "pf" "../tests/final/program/f"
+test "pg" "../tests/final/program/g"
+test "ph" "../tests/final/program/h"
+test "pi" "../tests/final/program/i"
+test "pj" "../tests/final/program/j"
+test "p93" "../tests/final/program/93"
+test "p81" "../tests/final/program/81"

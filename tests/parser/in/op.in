@@ -1,0 +1,27 @@
+/* binary op */
+a = [1, 2];
+tmp = 1 + 1;
+tmp = 1 - 1;
+tmp = 1 * 1;
+tmp = 1 % 1;
+tmp = 1 / 1;
+tmp = 1 & 1;
+tmp = 1 | 1;
+tmp = 1 ^ 1;
+tmp = 1 && 1;
+tmp = 1 || 1;
+tmp = 1 << 1;
+tmp = 1 >> 1;
+tmp = 1 == 1;
+tmp = 1 != 1;
+tmp = 1 < 2;
+tmp = 1 > 2;
+tmp = 1 <= 2;
+tmp = 1 >= 2;
+tmp = a[1];
+
+/* unary op */
+tmp = +1;
+tmp = -1;
+tmp = !1;
+tmp = ~1;
